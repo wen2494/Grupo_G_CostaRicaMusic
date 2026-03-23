@@ -4,45 +4,91 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Costa Rica Music</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- ICONOS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Grupo_G_WEB.styles.css" asp-append-version="true" />
 </head>
+
 <body>
     <div class="app-shell">
+
+        <!-- SIDEBAR -->
         <aside class="app-sidebar">
-            <a class="brand" asp-page="/Index">Costa Rica Music</a>
+            <a class="brand" asp-page="/Index">
+                <i class="bi bi-vinyl-fill"></i>
+                <span>Costa Rica Music</span>
+            </a>
+
             <nav class="app-nav" aria-label="Navegación principal">
-                <a asp-page="/Index">Inicio</a>
-                <a asp-page="/Search">Buscar</a>
-                <a asp-page="/Playlist" asp-route-id="1">Playlist</a>
-                <a asp-page="/Artist" asp-route-id="1">Artista</a>
-                <a asp-page="/Album" asp-route-id="1">Álbum</a>
+                <a asp-page="/Index">
+                    <i class="bi bi-house-door-fill"></i>
+                    <span>Inicio</span>
+                </a>
+
+                <a asp-page="/Search">
+                    <i class="bi bi-search"></i>
+                    <span>Buscar</span>
+                </a>
+
+                <a asp-page="/Playlist" asp-route-id="1">
+                    <i class="bi bi-music-note-list"></i>
+                    <span>Playlist</span>
+                </a>
+
+                <a asp-page="/Artist" asp-route-id="1">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Artista</span>
+                </a>
+
+                <a asp-page="/Album" asp-route-id="1">
+                    <i class="bi bi-disc"></i>
+                    <span>Álbum</span>
+                </a>
             </nav>
         </aside>
 
+        <!-- CONTENIDO -->
         <div class="app-main-area">
+
+            <!-- TOPBAR -->
             <header class="app-topbar">
                 <form method="get" asp-page="/Search" class="top-search" role="search">
                     <input type="search" name="q" placeholder="Buscar canciones, artistas o álbumes" />
-                    <button type="submit">Buscar</button>
+                    <button type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
                 </form>
             </header>
 
+            <!-- CONTENIDO DINÁMICO -->
             <main class="app-content" role="main">
                 @RenderBody()
             </main>
         </div>
 
+        <!-- PANEL DERECHO -->
         <aside class="app-right-panel">
-            <h3>Panel</h3>
-            <p>Reservado para "Ahora sonando" y cola extendida.</p>
+            <h3><i class="bi bi-music-note-beamed"></i> Ahora sonando</h3>
+            <p>Selecciona una canción para empezar</p>
+
+            <hr />
+
+            <h4><i class="bi bi-lightning-fill"></i> Sugerencias</h4>
+            <p>Explora nuevos artistas y playlists</p>
         </aside>
+
     </div>
 
+    <!-- SCRIPTS -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
