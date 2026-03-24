@@ -48,10 +48,17 @@
     </div>
 
     <div class="player-sliders">
-        <label for="seekBar">Progreso</label>
-        <input id="seekBar" type="range" min="0" max="100" value="0" step="1" />
-        <label for="volumeBar">Volumen</label>
-        <input id="volumeBar" type="range" min="0" max="1" value="1" step="0.05" />
+
+        <div class="progress-container">
+            <label for="seekBar">Progreso</label>
+            <input id="seekBar" class="progress-bar" type="range" min="0" max="100" value="0" step="1" />
+        </div>
+
+        <div class="volume-container">
+            <label for="volumeBar">Volumen</label>
+            <input id="volumeBar" class="volume-bar" type="range" min="0" max="1" value="1" step="0.05" />
+        </div>
+
     </div>
 
     <audio id="musicPlayer" preload="none">
