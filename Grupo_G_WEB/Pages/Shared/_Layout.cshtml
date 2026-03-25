@@ -1,3 +1,11 @@
+@using Grupo_G_WEB.Services
+@inject IMusicCatalogService CatalogService
+@{
+    const int SidebarUserId = 1;
+    var sidebarPlaylists = await CatalogService.GetPlaylistsAsync(SidebarUserId);
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
+    var currentPlaylistId = ViewContext.RouteData.Values["id"]?.ToString();
+}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,66 +28,158 @@
             </a>
 
             <nav class="app-nav" aria-label="Navegacion principal">
-                <a asp-page="/Index">
+                <a asp-page="/Index" class="@(currentPage == "/Index" ? "is-active" : null)">
                     <i class="bi bi-house-door-fill"></i>
                     <span>Inicio</span>
                 </a>
 
-                <a asp-page="/Search">
+                <a asp-page="/Search" class="@(currentPage == "/Search" ? "is-active" : null)">
                     <i class="bi bi-search"></i>
                     <span>Buscar</span>
                 </a>
 
-                <a asp-page="/Playlist" asp-route-id="1">
+                <a asp-page="/Playlist" class="@(currentPage == "/Playlist" && string.IsNullOrWhiteSpace(currentPlaylistId) ? "is-active" : null)">
                     <i class="bi bi-music-note-list"></i>
-                    <span>Playlist</span>
+                    <span>Playlists</span>
                 </a>
 
-                <a asp-page="/Artist" asp-route-id="1">
+                <a asp-page="/Artist" asp-route-id="1" class="@(currentPage == "/Artist" ? "is-active" : null)">
                     <i class="bi bi-person-badge"></i>
                     <span>Artista</span>
                 </a>
 
-                <a asp-page="/Album" asp-route-id="1">
+                <a asp-page="/Album" asp-route-id="1" class="@(currentPage == "/Album" ? "is-active" : null)">
                     <i class="bi bi-disc"></i>
-                    <span>Álbum</span>
+                    <span>Album</span>
                 </a>
             </nav>
+
+            <section class="sidebar-playlists">
+                <div class="sidebar-section-header">
+                    <p class="sidebar-kicker">Tu biblioteca</p>
+                    <a asp-page="/Playlist" class="sidebar-manage-link">Gestionar</a>
+                </div>
+
+                @if (sidebarPlaylists.Count == 0)
+                {
+                    <p class="small-note">Aun no hay playlists creadas.</p>
+                }
+                else
+                {
+                    <div class="sidebar-playlist-list">
+                        @foreach (var playlist in sidebarPlaylists)
+                        {
+                            var isActivePlaylist = currentPage == "/Playlist" && currentPlaylistId == playlist.Id.ToString();
+                            <a asp-page="/Playlist"
+                               asp-route-id="@playlist.Id"
+                               class="sidebar-playlist-link @(isActivePlaylist ? "is-active" : null)">
+                                <span class="sidebar-playlist-name">@playlist.Nombre</span>
+                                <span class="sidebar-playlist-caption">Playlist compartida</span>
+                            </a>
+                        }
+                    </div>
+                }
+            </section>
         </aside>
 
-        <!-- CONTENIDO -->
         <div class="app-main-area">
-
-            <!-- TOPBAR -->
             <header class="app-topbar">
                 <form method="get" asp-page="/Search" class="top-search" role="search">
-                    <input type="search" name="q" placeholder="Buscar canciones, artistas o álbumes" />
+                    <input type="search" name="q" placeholder="Buscar canciones, artistas o albumes" />
                     <button type="submit">
                         <i class="bi bi-search"></i>
                     </button>
                 </form>
             </header>
 
-            <!-- CONTENIDO DINÁMICO -->
             <main class="app-content" role="main">
                 @RenderBody()
             </main>
         </div>
 
-        <!-- PANEL DERECHO -->
         <aside class="app-right-panel">
             <h3><i class="bi bi-music-note-beamed"></i> Ahora sonando</h3>
-            <p>Selecciona una canción para empezar</p>
+            <div class="now-playing-card">
+                <div id="sideArtwork" class="now-playing-artwork">CRM</div>
+                <div>
+                    <p id="sideNowPlayingTitle">Selecciona una cancion para empezar</p>
+                    <p id="sideNowPlayingArtist" class="small-note">Sin reproduccion activa</p>
+                    <p id="sideNowPlayingAlbum" class="small-note">Sin album seleccionado</p>
+                </div>
+            </div>
 
             <hr />
 
-            <h4><i class="bi bi-lightning-fill"></i> Sugerencias</h4>
-            <p>Explora nuevos artistas y playlists</p>
+            <div class="queue-panel">
+                <div class="queue-panel-header">
+                    <h4><i class="bi bi-lightning-fill"></i> Up Next</h4>
+                    <span id="queueCount" class="small-note">0 canciones</span>
+                </div>
+                <div id="upNextList" class="up-next-list">
+                    <p class="small-note">La cola aparecera cuando selecciones una cancion.</p>
+                </div>
+            </div>
         </aside>
-
     </div>
 
-    <!-- SCRIPTS -->
+    <footer class="global-player" aria-label="Reproductor global">
+        <div class="player-track-meta">
+            <div id="globalArtwork" class="global-artwork">CRM</div>
+            <div class="player-meta-copy">
+                <p class="now-playing-label">Reproduciendo</p>
+                <h3 id="globalNowPlayingTitle">Selecciona una cancion</h3>
+                <p id="globalNowPlayingArtist">-</p>
+                <p id="globalNowPlayingAlbum" class="player-subtitle">-</p>
+            </div>
+        </div>
+
+        <div class="player-center-stack">
+            <div class="player-controls">
+                <button id="playCollectionBtn" type="button" class="icon-btn" aria-label="Reproducir la lista actual">
+                    <i class="bi bi-music-note-list"></i>
+                </button>
+                <button id="shuffleBtn" type="button" class="icon-btn" aria-label="Activar reproduccion aleatoria">
+                    <i class="bi bi-shuffle"></i>
+                </button>
+                <button id="prevTrackBtn" type="button" class="icon-btn" aria-label="Cancion anterior">
+                    <i class="bi bi-skip-start-fill"></i>
+                </button>
+                <button id="playPauseBtn" type="button" class="icon-btn play-btn" aria-label="Reproducir o pausar">
+                    <i class="bi bi-play-fill"></i>
+                </button>
+                <button id="nextTrackBtn" type="button" class="icon-btn" aria-label="Cancion siguiente">
+                    <i class="bi bi-skip-end-fill"></i>
+                </button>
+                <button id="repeatBtn" type="button" class="icon-btn" aria-label="Repetir cancion actual">
+                    <i class="bi bi-repeat"></i>
+                </button>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <label for="seekBar">Progreso</label>
+                    <div class="time-row">
+                        <span id="currentTimeLabel">0:00</span>
+                        <span id="durationLabel">0:00</span>
+                    </div>
+                </div>
+                <input id="seekBar" class="progress-bar" type="range" min="0" max="100" value="0" step="1" />
+            </div>
+        </div>
+
+        <div class="volume-container">
+            <label for="volumeBar">Volumen</label>
+            <div class="volume-shell">
+                <i class="bi bi-volume-up-fill"></i>
+                <input id="volumeBar" class="volume-bar" type="range" min="0" max="1" value="1" step="0.05" />
+            </div>
+        </div>
+
+        <audio id="musicPlayer" preload="none">
+            Tu navegador no soporta audio HTML5.
+        </audio>
+    </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

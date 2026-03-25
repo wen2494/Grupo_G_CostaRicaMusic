@@ -16,6 +16,7 @@
             <h2>Catalogo disponible</h2>
             <p class="small-note">@Model.Canciones.Count canciones listas para probar.</p>
         </div>
+        <button type="button" class="primary-action collection-action" data-play-collection=".home-catalog-list">Reproducir todo</button>
 
         @if (Model.Canciones.Count == 0)
         {
@@ -23,7 +24,7 @@
         }
         else
         {
-            <div class="track-list">
+            <div class="track-list home-catalog-list">
                 @foreach (var cancion in Model.Canciones)
                 {
                     <button type="button"
@@ -32,7 +33,8 @@
                             data-src="@cancion.RutaArchivo"
                             data-title="@cancion.NombreCancion"
                             data-artist="@cancion.NombreArtista"
-                            data-album="@cancion.NombreAlbum">
+                            data-album="@cancion.NombreAlbum"
+                            data-cover="@cancion.UrlPortadaAlbum">
                         <span class="track-title">@cancion.NombreCancion</span>
                         <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
                     </button>

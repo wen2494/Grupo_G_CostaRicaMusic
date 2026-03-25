@@ -43,6 +43,31 @@ public class MusicApiCatalogService(HttpClient httpClient) : IMusicCatalogServic
         return (await response.Content.ReadFromJsonAsync<Playlist>(JsonOptions))!;
     }
 
+    public async Task<PlaylistMutationResult> UpdatePlaylistAsync(int playlistId, string nombre, string? descripcion)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"/api/playlists/{playlistId}", new UpdatePlaylistRequest
+        {
+            Nombre = nombre,
+            Descripcion = descripcion
+        }, JsonOptions);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new PlaylistMutationResult(false, await ReadErrorMessageAsync(response));
+        }
+
+        var playlist = await GetPlaylistDetalleAsync(playlistId);
+        return new PlaylistMutationResult(true, null, playlist);
+    }
+
+    public async Task<OperationResult> DeletePlaylistAsync(int playlistId)
+    {
+        var response = await _httpClient.DeleteAsync($"/api/playlists/{playlistId}");
+        return response.IsSuccessStatusCode
+            ? new OperationResult(true)
+            : new OperationResult(false, await ReadErrorMessageAsync(response));
+    }
+
     public async Task<PlaylistMutationResult> AddSongToPlaylistAsync(int playlistId, int cancionId)
     {
         var response = await _httpClient.PostAsJsonAsync($"/api/playlists/{playlistId}/canciones", new AddSongToPlaylistRequest

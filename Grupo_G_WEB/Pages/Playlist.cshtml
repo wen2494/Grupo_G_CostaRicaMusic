@@ -1,35 +1,142 @@
-@page "/playlist/{id:int}"
+@page "/playlist/{id:int?}"
 @model PlaylistModel
 @{
-    ViewData["Title"] = "Playlist";
+    ViewData["Title"] = "Playlists";
 }
 
-<section class="route-card">
-    <h2>Playlist</h2>
+<section class="playlist-page">
+    <aside class="route-card playlist-sidebar-card">
+        <div class="section-heading">
+            <h2>Tus playlists</h2>
+            <p class="small-note">Crea y administra listas compartidas para todo el equipo.</p>
+        </div>
 
-    @if (Model.Playlist is null)
-    {
-        <p>Playlist no encontrada.</p>
-    }
-    else
-    {
-        <h3>@Model.Playlist.Nombre</h3>
-        <p class="small-note">@Model.Playlist.Descripcion</p>
+        <form method="post" asp-page-handler="Crear" class="playlist-form">
+            <label for="NombreNuevaPlaylist">Nueva playlist</label>
+            <input asp-for="NombreNuevaPlaylist" placeholder="Ej. Exitos del proyecto" />
 
-        <div class="track-list compact">
-            @foreach (var cancion in Model.Playlist.Canciones)
+            <label for="DescripcionNuevaPlaylist">Descripcion</label>
+            <textarea asp-for="DescripcionNuevaPlaylist" rows="3" placeholder="Que musica quieres guardar aqui"></textarea>
+
+            <button type="submit" class="primary-action">Crear playlist</button>
+        </form>
+
+        <div class="playlist-collection">
+            @foreach (var playlist in Model.Playlists)
             {
-                <button type="button"
-                        class="track-btn"
-                        data-track-id="@cancion.IdCancion"
-                        data-src="@cancion.RutaArchivo"
-                        data-title="@cancion.NombreCancion"
-                        data-artist="@cancion.NombreArtista"
-                        data-album="@cancion.NombreAlbum">
-                    <span class="track-title">@cancion.NombreCancion</span>
-                    <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
-                </button>
+                <a asp-page="/Playlist" asp-route-id="@playlist.Id" class="playlist-link @(Model.Playlist?.Id == playlist.Id ? "is-active" : null)">
+                    <span class="playlist-link-title">@playlist.Nombre</span>
+                    <span class="playlist-link-meta">@playlist.Descripcion</span>
+                </a>
             }
         </div>
-    }
+    </aside>
+
+    <div class="playlist-main">
+        @if (!string.IsNullOrWhiteSpace(Model.MensajeExito))
+        {
+            <div class="flash-message success-message">@Model.MensajeExito</div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+        {
+            <div class="flash-message error-message">@Model.MensajeError</div>
+        }
+
+        @if (Model.Playlist is null)
+        {
+            <section class="route-card">
+                <h2>No hay playlists seleccionadas</h2>
+                <p class="small-note">Crea una playlist desde el panel izquierdo para empezar.</p>
+            </section>
+        }
+        else
+        {
+            <section class="route-card">
+                <div class="playlist-header">
+                    <div>
+                        <p class="now-playing-label">Playlist activa</p>
+                        <h2>@Model.Playlist.Nombre</h2>
+                        <p class="small-note">@Model.Playlist.Descripcion</p>
+                    </div>
+
+                    <div class="playlist-header-actions">
+                        <button type="button" class="primary-action collection-action" data-play-collection=".playlist-current-song-list">Reproducir todo</button>
+                        <form method="post" asp-page-handler="Eliminar" asp-route-id="@Model.Playlist.Id">
+                            <button type="submit" class="danger-action">Eliminar playlist</button>
+                        </form>
+                    </div>
+                </div>
+
+                <form method="post" asp-page-handler="Editar" asp-route-id="@Model.Playlist.Id" class="playlist-form inline-form">
+                    <div class="form-grid">
+                        <div>
+                            <label for="NombreEditarPlaylist">Nombre</label>
+                            <input asp-for="NombreEditarPlaylist" />
+                        </div>
+                        <div>
+                            <label for="DescripcionEditarPlaylist">Descripcion</label>
+                            <input asp-for="DescripcionEditarPlaylist" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-action">Guardar cambios</button>
+                </form>
+            </section>
+
+            <section class="route-card">
+                <h3>Agregar canciones</h3>
+                <form method="post" asp-page-handler="AgregarCancion" asp-route-id="@Model.Playlist.Id" class="playlist-form inline-form">
+                    <label for="IdCancionAgregar">Cancion del catalogo</label>
+                    <select asp-for="IdCancionAgregar">
+                        <option value="0">Selecciona una cancion</option>
+                        @foreach (var cancion in Model.CatalogoCanciones)
+                        {
+                            var exists = Model.Playlist.Canciones.Any(item => item.IdCancion == cancion.Id);
+                            if (!exists)
+                            {
+                                <option value="@cancion.Id">@cancion.NombreCancion - @cancion.NombreArtista</option>
+                            }
+                        }
+                    </select>
+
+                    <button type="submit" class="primary-action">Agregar</button>
+                </form>
+            </section>
+
+            <section class="route-card">
+                <h3>Canciones en la playlist</h3>
+
+                @if (Model.Playlist.Canciones.Count == 0)
+                {
+                    <p class="small-note">Esta playlist todavia no tiene canciones.</p>
+                }
+                else
+                {
+                    <div class="playlist-song-list playlist-current-song-list">
+                        @foreach (var cancion in Model.Playlist.Canciones)
+                        {
+                            <div class="playlist-song-row">
+                                <button type="button"
+                                        class="track-btn"
+                                        data-track-id="@cancion.IdCancion"
+                                        data-src="@cancion.RutaArchivo"
+                                        data-title="@cancion.NombreCancion"
+                                        data-artist="@cancion.NombreArtista"
+                                        data-album="@cancion.NombreAlbum"
+                                        data-cover="@cancion.UrlPortadaAlbum">
+                                    <span class="track-title">@cancion.NombreCancion</span>
+                                    <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
+                                </button>
+
+                                <form method="post" asp-page-handler="QuitarCancion" asp-route-id="@Model.Playlist.Id" asp-route-idCancion="@cancion.IdCancion">
+                                    <button type="submit" class="ghost-action">Quitar</button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        }
+    </div>
 </section>

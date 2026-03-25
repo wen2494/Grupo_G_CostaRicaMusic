@@ -34,6 +34,27 @@ public class PlaylistsController(ICatalogoService catalogoService) : ControllerB
         return CreatedAtAction(nameof(GetById), new { id = playlist.Id }, playlist);
     }
 
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdatePlaylistRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Nombre))
+        {
+            return BadRequest(new { mensaje = "Nombre es requerido." });
+        }
+
+        var result = await catalogoService.ActualizarPlaylistAsync(id, request.Nombre.Trim(), request.Descripcion?.Trim());
+        return result.Success
+            ? Ok(result.Playlist)
+            : NotFound(new { mensaje = result.Error });
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await catalogoService.EliminarPlaylistAsync(id);
+        return result.Success ? NoContent() : NotFound(new { mensaje = result.Error });
+    }
+
     [HttpPost("{id:int}/canciones")]
     public async Task<IActionResult> AddSong(int id, [FromBody] AddSongToPlaylistRequest request)
     {

@@ -13,6 +13,8 @@ public interface ICatalogoService
     Task<List<Playlist>> ListarPlaylistsPorUsuarioAsync(int idUsuario);
     Task<PlaylistDetalleDto?> ObtenerPlaylistPorIdAsync(int id);
     Task<Playlist> CrearPlaylistAsync(int idUsuario, string nombre, string? descripcion);
+    Task<(bool Success, string? Error, Playlist? Playlist)> ActualizarPlaylistAsync(int id, string nombre, string? descripcion);
+    Task<(bool Success, string? Error)> EliminarPlaylistAsync(int id);
     Task<(bool Success, string? Error)> AgregarCancionAPlaylistAsync(int idPlaylist, int idCancion);
     Task<(bool Success, string? Error)> QuitarCancionDePlaylistAsync(int idPlaylist, int idCancion);
 }

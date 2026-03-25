@@ -8,6 +8,8 @@ public interface IMusicCatalogService
     Task<IReadOnlyList<Playlist>> GetPlaylistsAsync(int idUsuario = 1);
     Task<PlaylistDetalleDto?> GetPlaylistDetalleAsync(int playlistId);
     Task<Playlist> CreatePlaylistAsync(int idUsuario, string nombre, string? descripcion);
+    Task<PlaylistMutationResult> UpdatePlaylistAsync(int playlistId, string nombre, string? descripcion);
+    Task<OperationResult> DeletePlaylistAsync(int playlistId);
     Task<PlaylistMutationResult> AddSongToPlaylistAsync(int playlistId, int cancionId);
     Task<OperationResult> RemoveSongFromPlaylistAsync(int playlistId, int cancionId);
 
