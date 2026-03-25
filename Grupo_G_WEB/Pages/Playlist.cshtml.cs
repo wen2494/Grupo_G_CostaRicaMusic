@@ -1,15 +1,143 @@
 using Grupo_G_WEB.Models;
 using Grupo_G_WEB.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Grupo_G_WEB.Pages;
 
 public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
 {
-    public PlaylistDetalleDto? Playlist { get; private set; }
+    private const int DefaultUserId = 1;
 
-    public void OnGet(int id)
+    [BindProperty(SupportsGet = true)]
+    public int? Id { get; set; }
+
+    [BindProperty]
+    public string NombreNuevaPlaylist { get; set; } = string.Empty;
+
+    [BindProperty]
+    public string? DescripcionNuevaPlaylist { get; set; }
+
+    [BindProperty]
+    public string NombreEditarPlaylist { get; set; } = string.Empty;
+
+    [BindProperty]
+    public string? DescripcionEditarPlaylist { get; set; }
+
+    [BindProperty]
+    public int IdCancionAgregar { get; set; }
+
+    public IReadOnlyList<Playlist> Playlists { get; private set; } = [];
+    public PlaylistDetalleDto? Playlist { get; private set; }
+    public IReadOnlyList<CancionDetalleDto> CatalogoCanciones { get; private set; } = [];
+
+    [TempData]
+    public string? MensajeExito { get; set; }
+
+    [TempData]
+    public string? MensajeError { get; set; }
+
+    public async Task OnGetAsync()
     {
-        Playlist = catalogService.GetPlaylistDetalle(id);
+        await LoadAsync(Id);
+    }
+
+    public async Task<IActionResult> OnPostCrearAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NombreNuevaPlaylist))
+        {
+            MensajeError = "Debes escribir un nombre para la playlist.";
+            return RedirectToPage(new { id = Id });
+        }
+
+        var playlist = await catalogService.CreatePlaylistAsync(DefaultUserId, NombreNuevaPlaylist.Trim(), DescripcionNuevaPlaylist?.Trim());
+        MensajeExito = "Playlist creada correctamente.";
+        return RedirectToPage(new { id = playlist.Id });
+    }
+
+    public async Task<IActionResult> OnPostEditarAsync(int id)
+    {
+        if (string.IsNullOrWhiteSpace(NombreEditarPlaylist))
+        {
+            MensajeError = "El nombre de la playlist no puede quedar vacio.";
+            return RedirectToPage(new { id });
+        }
+
+        var result = await catalogService.UpdatePlaylistAsync(id, NombreEditarPlaylist.Trim(), DescripcionEditarPlaylist?.Trim());
+        if (!result.Success)
+        {
+            MensajeError = result.Error;
+            return RedirectToPage(new { id });
+        }
+
+        MensajeExito = "Playlist actualizada.";
+        return RedirectToPage(new { id });
+    }
+
+    public async Task<IActionResult> OnPostEliminarAsync(int id)
+    {
+        var result = await catalogService.DeletePlaylistAsync(id);
+        if (!result.Success)
+        {
+            MensajeError = result.Error;
+            return RedirectToPage(new { id });
+        }
+
+        var playlists = await catalogService.GetPlaylistsAsync(DefaultUserId);
+        var nextId = playlists.FirstOrDefault()?.Id;
+        MensajeExito = "Playlist eliminada.";
+        return nextId is null ? RedirectToPage() : RedirectToPage(new { id = nextId });
+    }
+
+    public async Task<IActionResult> OnPostAgregarCancionAsync(int id)
+    {
+        if (IdCancionAgregar <= 0)
+        {
+            MensajeError = "Selecciona una cancion para agregar.";
+            return RedirectToPage(new { id });
+        }
+
+        var result = await catalogService.AddSongToPlaylistAsync(id, IdCancionAgregar);
+        if (!result.Success)
+        {
+            MensajeError = result.Error;
+            return RedirectToPage(new { id });
+        }
+
+        MensajeExito = "Cancion agregada a la playlist.";
+        return RedirectToPage(new { id });
+    }
+
+    public async Task<IActionResult> OnPostQuitarCancionAsync(int id, int idCancion)
+    {
+        var result = await catalogService.RemoveSongFromPlaylistAsync(id, idCancion);
+        if (!result.Success)
+        {
+            MensajeError = result.Error;
+            return RedirectToPage(new { id });
+        }
+
+        MensajeExito = "Cancion eliminada de la playlist.";
+        return RedirectToPage(new { id });
+    }
+
+    private async Task LoadAsync(int? selectedId)
+    {
+        Playlists = await catalogService.GetPlaylistsAsync(DefaultUserId);
+        CatalogoCanciones = await catalogService.SearchSongsAsync(null);
+
+        var currentId = selectedId ?? Playlists.FirstOrDefault()?.Id;
+        if (currentId is null)
+        {
+            return;
+        }
+
+        Playlist = await catalogService.GetPlaylistDetalleAsync(currentId.Value);
+        if (Playlist is not null)
+        {
+            NombreEditarPlaylist = Playlist.Nombre;
+            DescripcionEditarPlaylist = Playlist.Descripcion;
+            Id = Playlist.Id;
+        }
     }
 }

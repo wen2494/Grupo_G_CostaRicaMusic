@@ -1,19 +1,36 @@
 @page "/album/{id:int}"
 @model AlbumModel
 @{
-    ViewData["Title"] = "Álbum";
+    ViewData["Title"] = "Album";
 }
 
 <section class="route-card">
-    <h2>Álbum</h2>
+    <h2>Album</h2>
 
     @if (Model.Album is null)
     {
-        <p>Álbum no encontrado.</p>
+        <p>Album no encontrado.</p>
     }
     else
     {
         <h3>@Model.Album.Nombre</h3>
-        <p class="small-note">Año: @(Model.Album.Anio?.ToString() ?? "—")</p>
+        <p class="small-note">Anio: @(Model.Album.Anio?.ToString() ?? "-")</p>
+
+        <div class="track-list compact">
+            @foreach (var cancion in Model.Canciones)
+            {
+                <button type="button"
+                        class="track-btn"
+                        data-track-id="@cancion.Id"
+                        data-src="@cancion.RutaArchivo"
+                        data-title="@cancion.NombreCancion"
+                        data-artist="@cancion.NombreArtista"
+                        data-album="@cancion.NombreAlbum"
+                        data-cover="@cancion.UrlPortadaAlbum">
+                    <span class="track-title">@cancion.NombreCancion</span>
+                    <span class="track-meta">Pista @cancion.NumeroPista · @cancion.NombreArtista</span>
+                </button>
+            }
+        </div>
     }
 </section>

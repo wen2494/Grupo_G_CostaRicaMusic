@@ -8,6 +8,7 @@ namespace Grupo_G_API.Models
         public int DuracionSegundos { get; set; }
         public int NumeroPista { get; set; }
         public string RutaArchivo { get; set; } = string.Empty;
+        public string NombreArtista { get; set; } = string.Empty;
         public int IdAlbum { get; set; }
         public string NombreAlbum { get; set; } = string.Empty;
         public int? Anio { get; set; }

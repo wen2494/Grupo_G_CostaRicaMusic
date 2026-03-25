@@ -6,26 +6,43 @@
 
 <section class="route-card">
     <h2>Buscar</h2>
-    <p class="small-note">Resultados agrupados por canciones, artistas y álbumes.</p>
+    <p class="small-note">Resultados agrupados por canciones, artistas y albumes.</p>
 
     <h3>Canciones</h3>
-    <ul>
-        @foreach (var song in Model.Canciones)
-        {
-            <li>@song.NombreCancion — @song.NombreArtista</li>
-        }
-    </ul>
+    @if (Model.Canciones.Count == 0)
+    {
+        <p>No se encontraron canciones.</p>
+    }
+    else
+    {
+        <div class="track-list compact">
+            @foreach (var song in Model.Canciones)
+            {
+                <button type="button"
+                        class="track-btn"
+                        data-track-id="@song.Id"
+                        data-src="@song.RutaArchivo"
+                        data-title="@song.NombreCancion"
+                        data-artist="@song.NombreArtista"
+                        data-album="@song.NombreAlbum"
+                        data-cover="@song.UrlPortadaAlbum">
+                    <span class="track-title">@song.NombreCancion</span>
+                    <span class="track-meta">@song.NombreArtista · @song.NombreAlbum</span>
+                </button>
+            }
+        </div>
+    }
 
     <h3>Artistas</h3>
-    <ul>
+    <ul class="link-list">
         @foreach (var artist in Model.Artistas)
         {
             <li><a asp-page="/Artist" asp-route-id="@artist.Id">@artist.Nombre</a></li>
         }
     </ul>
 
-    <h3>Álbumes</h3>
-    <ul>
+    <h3>Albumes</h3>
+    <ul class="link-list">
         @foreach (var album in Model.Albumes)
         {
             <li><a asp-page="/Album" asp-route-id="@album.Id">@album.Nombre</a></li>

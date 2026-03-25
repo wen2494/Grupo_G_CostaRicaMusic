@@ -15,5 +15,22 @@
     {
         <h3>@Model.Artista.Nombre</h3>
         <p class="small-note">@Model.Artista.Biografia</p>
+
+        <div class="track-list compact">
+            @foreach (var cancion in Model.Canciones)
+            {
+                <button type="button"
+                        class="track-btn"
+                        data-track-id="@cancion.Id"
+                        data-src="@cancion.RutaArchivo"
+                        data-title="@cancion.NombreCancion"
+                        data-artist="@cancion.NombreArtista"
+                        data-album="@cancion.NombreAlbum"
+                        data-cover="@cancion.UrlPortadaAlbum">
+                    <span class="track-title">@cancion.NombreCancion</span>
+                    <span class="track-meta">@cancion.NombreAlbum</span>
+                </button>
+            }
+        </div>
     }
 </section>

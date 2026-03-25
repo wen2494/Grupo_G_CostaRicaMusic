@@ -1,0 +1,124 @@
+{
+  "Artistas": [
+    {
+      "Id": 1,
+      "Nombre": "Costa Rica Music Sessions",
+      "Biografia": "Catalogo de prueba compartido para el proyecto universitario.",
+      "UrlImagen": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format\u0026fit=crop\u0026w=800\u0026q=80",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 2,
+      "Nombre": "Open Sound Lab",
+      "Biografia": "Coleccion de temas instrumentales para demos y pruebas.",
+      "UrlImagen": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format\u0026fit=crop\u0026w=800\u0026q=80",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    }
+  ],
+  "Albumes": [
+    {
+      "Id": 1,
+      "Nombre": "Demo Vibes",
+      "IdArtista": 1,
+      "Anio": 2026,
+      "UrlPortada": "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format\u0026fit=crop\u0026w=900\u0026q=80",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 2,
+      "Nombre": "Campus Nights",
+      "IdArtista": 2,
+      "Anio": 2026,
+      "UrlPortada": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format\u0026fit=crop\u0026w=900\u0026q=80",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    }
+  ],
+  "Canciones": [
+    {
+      "Id": 1,
+      "Nombre": "Ocean Drive",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 372,
+      "NumeroPista": 1,
+      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 2,
+      "Nombre": "Night Library",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 398,
+      "NumeroPista": 2,
+      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 3,
+      "Nombre": "Code and Coffee",
+      "IdAlbum": 2,
+      "IdArtista": 2,
+      "DuracionSegundos": 360,
+      "NumeroPista": 1,
+      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 4,
+      "Nombre": "Sunset Review",
+      "IdAlbum": 2,
+      "IdArtista": 2,
+      "DuracionSegundos": 412,
+      "NumeroPista": 2,
+      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    }
+  ],
+  "Playlists": [
+    {
+      "Id": 1,
+      "IdUsuario": 1,
+      "Nombre": "Favoritas del equipo",
+      "Descripcion": "Lista compartida para demo y pruebas.",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 2,
+      "IdUsuario": 1,
+      "Nombre": "Prueba de Playlist",
+      "Descripcion": "Demooooooo",
+      "FechaCreacion": "2026-03-25T19:33:55.1089698Z"
+    }
+  ],
+  "PlaylistCanciones": [
+    {
+      "Id": 1,
+      "IdPlaylist": 1,
+      "IdCancion": 1,
+      "Orden": 1,
+      "FechaAgregado": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 2,
+      "IdPlaylist": 1,
+      "IdCancion": 3,
+      "Orden": 2,
+      "FechaAgregado": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 3,
+      "IdPlaylist": 2,
+      "IdCancion": 3,
+      "Orden": 1,
+      "FechaAgregado": "2026-03-25T19:34:01.7109089Z"
+    },
+    {
+      "Id": 4,
+      "IdPlaylist": 2,
+      "IdCancion": 4,
+      "Orden": 2,
+      "FechaAgregado": "2026-03-25T19:34:05.4705683Z"
+    }
+  ]
+}
