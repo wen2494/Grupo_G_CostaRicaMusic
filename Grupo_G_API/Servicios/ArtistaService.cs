@@ -63,10 +63,16 @@ namespace Grupo_G_API.Servicios
             var lista = new List<ArtistaCancionItemDto>();
             await using var cn = new SqlConnection(ConnectionString);
             await cn.OpenAsync();
-            await using var cmd = new SqlCommand("sp_Artista_Canciones_Listar", cn)
-            {
-                CommandType = System.Data.CommandType.StoredProcedure
-            };
+            const string sql = """
+                SELECT c.Id, c.Nombre AS NombreCancion, c.DuracionSegundos, c.NumeroPista, c.RutaArchivo,
+                       a.Nombre AS NombreArtista, al.Id AS IdAlbum, al.Nombre AS NombreAlbum, al.Anio
+                FROM Canciones c
+                INNER JOIN Artistas a ON c.IdArtista = a.Id
+                INNER JOIN Albumes al ON c.IdAlbum = al.Id
+                WHERE c.IdArtista = @IdArtista
+                ORDER BY al.Nombre, c.NumeroPista;
+                """;
+            await using var cmd = new SqlCommand(sql, cn);
             cmd.Parameters.AddWithValue("@IdArtista", idArtista);
             await using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -78,9 +84,10 @@ namespace Grupo_G_API.Servicios
                     DuracionSegundos = reader.GetInt32(2),
                     NumeroPista = reader.GetInt32(3),
                     RutaArchivo = reader.GetString(4),
-                    IdAlbum = reader.GetInt32(5),
-                    NombreAlbum = reader.GetString(6),
-                    Anio = reader.IsDBNull(7) ? null : reader.GetInt32(7)
+                    NombreArtista = reader.GetString(5),
+                    IdAlbum = reader.GetInt32(6),
+                    NombreAlbum = reader.GetString(7),
+                    Anio = reader.IsDBNull(8) ? null : reader.GetInt32(8)
                 });
             }
             return lista;

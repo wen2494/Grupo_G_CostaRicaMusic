@@ -16,11 +16,20 @@
         <h3>@Model.Playlist.Nombre</h3>
         <p class="small-note">@Model.Playlist.Descripcion</p>
 
-        <ul>
+        <div class="track-list compact">
             @foreach (var cancion in Model.Playlist.Canciones)
             {
-                <li>@cancion.NombreCancion — @cancion.NombreArtista</li>
+                <button type="button"
+                        class="track-btn"
+                        data-track-id="@cancion.IdCancion"
+                        data-src="@cancion.RutaArchivo"
+                        data-title="@cancion.NombreCancion"
+                        data-artist="@cancion.NombreArtista"
+                        data-album="@cancion.NombreAlbum">
+                    <span class="track-title">@cancion.NombreCancion</span>
+                    <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
+                </button>
             }
-        </ul>
+        </div>
     }
 </section>

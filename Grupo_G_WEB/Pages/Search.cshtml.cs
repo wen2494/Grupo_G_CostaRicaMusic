@@ -14,10 +14,10 @@ public class SearchModel(IMusicCatalogService catalogService) : PageModel
     public IReadOnlyList<Artista> Artistas { get; private set; } = [];
     public IReadOnlyList<Album> Albumes { get; private set; } = [];
 
-    public void OnGet()
+    public async Task OnGetAsync()
     {
-        Canciones = catalogService.SearchSongs(Q);
-        Artistas = catalogService.SearchArtists(Q);
-        Albumes = catalogService.SearchAlbums(Q);
+        Canciones = await catalogService.SearchSongsAsync(Q);
+        Artistas = await catalogService.SearchArtistsAsync(Q);
+        Albumes = await catalogService.SearchAlbumsAsync(Q);
     }
 }

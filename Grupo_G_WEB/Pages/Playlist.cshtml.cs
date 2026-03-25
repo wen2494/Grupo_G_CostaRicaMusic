@@ -8,8 +8,8 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
 {
     public PlaylistDetalleDto? Playlist { get; private set; }
 
-    public void OnGet(int id)
+    public async Task OnGetAsync(int id)
     {
-        Playlist = catalogService.GetPlaylistDetalle(id);
+        Playlist = await catalogService.GetPlaylistDetalleAsync(id);
     }
 }

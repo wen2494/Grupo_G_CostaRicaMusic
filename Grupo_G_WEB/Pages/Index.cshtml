@@ -4,250 +4,46 @@
     ViewData["Title"] = "Inicio";
 }
 
-<section class="home-grid">
-    <div class="library-card">
-        <h2>Playlist de ejemplo</h2>
-        <ul>
-            @foreach (var cancion in Model.Canciones)
-            {
-                <li>
-                    <button type="button"
-                            class="track-btn"
-                            data-src="@cancion.UrlPreview"
-                            data-title="@cancion.Titulo"
-                            data-artist="@cancion.Artista">
-                        <span class="track-title">@cancion.Titulo</span>
-                        <span class="track-artist">@cancion.Artista</span>
-                    </button>
-                </li>
-            }
-        </ul>
-    </aside>
-
-    <main class="main-content">
-        <div class="player-card">
-            <p class="now-playing-label">Ahora sonando</p>
-            <h3 id="nowPlayingTitle">Seleccioná una canción</h3>
-            <p id="nowPlayingArtist">—</p>
-            <p class="small-note">Usá la barra inferior para controlar la reproducción.</p>
-        </div>
-    </div>
+<section class="hero-card">
+    <p class="eyebrow">Costa Rica Music</p>
+    <h1>Tu musica ahora viene del backend real.</h1>
+    <p class="small-note">Selecciona una cancion y usa el reproductor inferior para controlar la reproduccion.</p>
 </section>
 
-<footer class="global-player" aria-label="Reproductor global">
-    <div class="player-track-meta">
-        <p class="now-playing-label">Reproduciendo</p>
-        <h3 id="globalNowPlayingTitle">Seleccioná una canción</h3>
-        <p id="globalNowPlayingArtist">—</p>
-    </div>
-
-    <div class="player-controls">
-        <button id="prevTrackBtn" type="button" class="icon-btn" aria-label="Canción anterior">⏮</button>
-        <button id="playPauseBtn" type="button" class="icon-btn play-btn" aria-label="Reproducir o pausar">▶</button>
-        <button id="nextTrackBtn" type="button" class="icon-btn" aria-label="Canción siguiente">⏭</button>
-    </div>
-
-    <div class="player-sliders">
-
-        <div class="progress-container">
-            <label for="seekBar">Progreso</label>
-            <input id="seekBar" class="progress-bar" type="range" min="0" max="100" value="0" step="1" />
+<section class="home-grid">
+    <div class="library-card">
+        <div class="section-heading">
+            <h2>Catalogo disponible</h2>
+            <p class="small-note">@Model.Canciones.Count canciones listas para probar.</p>
         </div>
 
-        <div class="volume-container">
-            <label for="volumeBar">Volumen</label>
-            <input id="volumeBar" class="volume-bar" type="range" min="0" max="1" value="1" step="0.05" />
-        </div>
-
-    </div>
-
-    <audio id="musicPlayer" preload="none">
-        Tu navegador no soporta audio HTML5.
-    </audio>
-</footer>
-
-@section Scripts {
-    <script>
-        const botonesCancion = Array.from(document.querySelectorAll('.track-btn'));
-        const player = document.getElementById('musicPlayer');
-        const titulo = document.getElementById('nowPlayingTitle');
-        const artista = document.getElementById('nowPlayingArtist');
-        const tituloGlobal = document.getElementById('globalNowPlayingTitle');
-        const artistaGlobal = document.getElementById('globalNowPlayingArtist');
-
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const nextTrackBtn = document.getElementById('nextTrackBtn');
-        const prevTrackBtn = document.getElementById('prevTrackBtn');
-        const seekBar = document.getElementById('seekBar');
-        const volumeBar = document.getElementById('volumeBar');
-
-        let indiceActual = -1;
-
-        const setButtonState = (isPlaying) => {
-            playPauseBtn.textContent = isPlaying ? '⏸' : '▶';
-        };
-
-        const marcarTrackActiva = (isPlaying) => {
-            botonesCancion.forEach((btn, idx) => {
-                btn.classList.remove('is-selected', 'is-playing');
-
-                if (idx === indiceActual) {
-                    btn.classList.add('is-selected');
-                    if (isPlaying) {
-                        btn.classList.add('is-playing');
-                    }
+        @if (Model.Canciones.Count == 0)
+        {
+            <p>No hay canciones disponibles.</p>
+        }
+        else
+        {
+            <div class="track-list">
+                @foreach (var cancion in Model.Canciones)
+                {
+                    <button type="button"
+                            class="track-btn"
+                            data-track-id="@cancion.Id"
+                            data-src="@cancion.RutaArchivo"
+                            data-title="@cancion.NombreCancion"
+                            data-artist="@cancion.NombreArtista"
+                            data-album="@cancion.NombreAlbum">
+                        <span class="track-title">@cancion.NombreCancion</span>
+                        <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
+                    </button>
                 }
-            });
-        };
+            </div>
+        }
+    </div>
 
-        const cargarTrack = (index, autoplay = true) => {
-            if (index < 0 || index >= botonesCancion.length) {
-                return;
-            }
-
-            const btn = botonesCancion[index];
-            indiceActual = index;
-            player.src = btn.dataset.src;
-
-            titulo.textContent = btn.dataset.title;
-            artista.textContent = btn.dataset.artist;
-            tituloGlobal.textContent = btn.dataset.title;
-            artistaGlobal.textContent = btn.dataset.artist;
-
-            seekBar.value = 0;
-            marcarTrackActiva(false);
-
-            if (autoplay) {
-                player.play();
-            }
-        };
-
-        botonesCancion.forEach((btn, idx) => {
-            btn.addEventListener('click', () => cargarTrack(idx));
-        });
-
-        playPauseBtn.addEventListener('click', () => {
-            if (!player.src && botonesCancion.length > 0) {
-                cargarTrack(0, true);
-                return;
-            }
-
-            if (player.paused) {
-                player.play();
-            } else {
-                player.pause();
-            }
-        });
-
-        nextTrackBtn.addEventListener('click', () => {
-            if (botonesCancion.length === 0) return;
-            const nextIndex = indiceActual < 0 ? 0 : (indiceActual + 1) % botonesCancion.length;
-            cargarTrack(nextIndex, true);
-        });
-
-        prevTrackBtn.addEventListener('click', () => {
-            if (botonesCancion.length === 0) return;
-            const prevIndex = indiceActual <= 0 ? botonesCancion.length - 1 : indiceActual - 1;
-            cargarTrack(prevIndex, true);
-        });
-
-        player.addEventListener('play', () => {
-            setButtonState(true);
-            marcarTrackActiva(true);
-        });
-
-        player.addEventListener('pause', () => {
-            setButtonState(false);
-            marcarTrackActiva(false);
-        });
-
-        player.addEventListener('ended', () => {
-            if (botonesCancion.length === 0) return;
-            const nextIndex = (indiceActual + 1) % botonesCancion.length;
-            cargarTrack(nextIndex, true);
-        });
-
-        player.addEventListener('timeupdate', () => {
-            if (!player.duration || Number.isNaN(player.duration)) return;
-            seekBar.value = Math.round((player.currentTime / player.duration) * 100);
-        });
-
-        seekBar.addEventListener('input', () => {
-            if (!player.duration || Number.isNaN(player.duration)) return;
-            player.currentTime = (seekBar.value / 100) * player.duration;
-        });
-
-        volumeBar.addEventListener('input', () => {
-            player.volume = Number(volumeBar.value);
-        });
-
-        repeatBtn.addEventListener('click', () => {
-            repeatActivo = !repeatActivo;
-            actualizarBotonesModo();
-            renderUpNext();
-        });
-
-        playPauseBtn.addEventListener('click', () => {
-            if (!player.src && botonesCancion.length > 0) {
-                cargarTrack(0, true);
-                return;
-            }
-
-            if (player.paused) {
-                player.play();
-            } else {
-                player.pause();
-            }
-        });
-
-        nextTrackBtn.addEventListener('click', () => {
-            const nextIndex = obtenerSiguienteIndice();
-            if (nextIndex < 0) return;
-            cargarTrack(nextIndex, true);
-        });
-
-        prevTrackBtn.addEventListener('click', () => {
-            const prevIndex = obtenerAnteriorIndice();
-            if (prevIndex < 0) return;
-            cargarTrack(prevIndex, true);
-        });
-
-        player.addEventListener('play', () => {
-            setButtonState(true);
-            marcarTrackActiva(true);
-        });
-
-        player.addEventListener('pause', () => {
-            setButtonState(false);
-            marcarTrackActiva(false);
-        });
-
-        player.addEventListener('ended', () => {
-            const nextIndex = obtenerSiguienteIndice();
-            if (nextIndex < 0) {
-                setButtonState(false);
-                marcarTrackActiva(false);
-                return;
-            }
-
-            cargarTrack(nextIndex, true);
-        });
-
-        player.addEventListener('timeupdate', () => {
-            if (!player.duration || Number.isNaN(player.duration)) return;
-            seekBar.value = Math.round((player.currentTime / player.duration) * 100);
-        });
-
-        seekBar.addEventListener('input', () => {
-            if (!player.duration || Number.isNaN(player.duration)) return;
-            player.currentTime = (seekBar.value / 100) * player.duration;
-        });
-
-        volumeBar.addEventListener('input', () => {
-            player.volume = Number(volumeBar.value);
-        });
-
-        actualizarBotonesModo();
-        renderUpNext();
-    </script>
-}
+    <div class="player-card">
+        <p class="now-playing-label">Demo funcional</p>
+        <h2>Reproductor conectado</h2>
+        <p class="small-note">La portada, busqueda, albumes, artistas y playlists usan la misma API para reproducir audio.</p>
+    </div>
+</section>
