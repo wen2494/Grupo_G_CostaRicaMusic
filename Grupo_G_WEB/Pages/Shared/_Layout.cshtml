@@ -1,8 +1,9 @@
 @using Grupo_G_WEB.Services
 @inject IMusicCatalogService CatalogService
 @{
-    const int SidebarUserId = 1;
-    var sidebarPlaylists = await CatalogService.GetPlaylistsAsync(SidebarUserId);
+    var sessionUserId = Context.Session.GetInt32("UserId");
+    var sessionDisplayName = Context.Session.GetString("DisplayName");
+    IReadOnlyList<Grupo_G_WEB.Models.Playlist> sidebarPlaylists = sessionUserId is null ? [] : await CatalogService.GetPlaylistsAsync(sessionUserId.Value);
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
     var currentPlaylistId = ViewContext.RouteData.Values["id"]?.ToString();
 }
@@ -27,6 +28,19 @@
                 <span>Costa Rica Music</span>
             </a>
 
+            <div class="user-chip">
+                @if (sessionUserId is null)
+                {
+                    <a asp-page="/Login"><i class="bi bi-box-arrow-in-right"></i><span>Entrar</span></a>
+                    <a asp-page="/Register">Crear</a>
+                }
+                else
+                {
+                    <span><i class="bi bi-person-circle"></i>@sessionDisplayName</span>
+                    <a asp-page="/Logout">Salir</a>
+                }
+            </div>
+
             <nav class="app-nav" aria-label="Navegacion principal">
                 <a asp-page="/Index" class="@(currentPage == "/Index" ? "is-active" : null)">
                     <i class="bi bi-house-door-fill"></i>
@@ -43,14 +57,14 @@
                     <span>Playlists</span>
                 </a>
 
-                <a asp-page="/Artist" asp-route-id="1" class="@(currentPage == "/Artist" ? "is-active" : null)">
+                <a asp-page="/Artist" class="@(currentPage == "/Artist" ? "is-active" : null)">
                     <i class="bi bi-person-badge"></i>
-                    <span>Artista</span>
+                    <span>Artistas</span>
                 </a>
 
-                <a asp-page="/Album" asp-route-id="1" class="@(currentPage == "/Album" ? "is-active" : null)">
+                <a asp-page="/Album" class="@(currentPage == "/Album" ? "is-active" : null)">
                     <i class="bi bi-disc"></i>
-                    <span>Album</span>
+                    <span>Albumes</span>
                 </a>
             </nav>
 
@@ -62,7 +76,7 @@
 
                 @if (sidebarPlaylists.Count == 0)
                 {
-                    <p class="small-note">Aun no hay playlists creadas.</p>
+                    <p class="small-note">Sin playlists.</p>
                 }
                 else
                 {
@@ -85,7 +99,7 @@
         <div class="app-main-area">
             <header class="app-topbar">
                 <form method="get" asp-page="/Search" class="top-search" role="search">
-                    <input type="search" name="q" placeholder="Buscar canciones, artistas o albumes" />
+                    <input type="search" name="q" placeholder="Buscar" />
                     <button type="submit">
                         <i class="bi bi-search"></i>
                     </button>
@@ -98,13 +112,13 @@
         </div>
 
         <aside class="app-right-panel">
-            <h3><i class="bi bi-music-note-beamed"></i> Ahora sonando</h3>
+            <h3><i class="bi bi-music-note-beamed"></i> Sonando</h3>
             <div class="now-playing-card">
                 <div id="sideArtwork" class="now-playing-artwork">CRM</div>
                 <div>
-                    <p id="sideNowPlayingTitle">Selecciona una cancion para empezar</p>
-                    <p id="sideNowPlayingArtist" class="small-note">Sin reproduccion activa</p>
-                    <p id="sideNowPlayingAlbum" class="small-note">Sin album seleccionado</p>
+                    <p id="sideNowPlayingTitle">Elige una cancion</p>
+                    <p id="sideNowPlayingArtist" class="small-note">-</p>
+                    <p id="sideNowPlayingAlbum" class="small-note">-</p>
                 </div>
             </div>
 
@@ -112,11 +126,11 @@
 
             <div class="queue-panel">
                 <div class="queue-panel-header">
-                    <h4><i class="bi bi-lightning-fill"></i> Up Next</h4>
+                    <h4><i class="bi bi-lightning-fill"></i> Sigue</h4>
                     <span id="queueCount" class="small-note">0 canciones</span>
                 </div>
                 <div id="upNextList" class="up-next-list">
-                    <p class="small-note">La cola aparecera cuando selecciones una cancion.</p>
+                    <p class="small-note">Sin cola.</p>
                 </div>
             </div>
         </aside>

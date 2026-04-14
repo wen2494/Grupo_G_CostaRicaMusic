@@ -1,0 +1,32 @@
+@page "/login"
+@model LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="login-shell">
+    <div class="login-card">
+        <p class="eyebrow">Costa Rica Music</p>
+        <h1>Entrar</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+        {
+            <div class="flash-message error-message">@Model.MensajeError</div>
+        }
+
+        <form method="post" class="playlist-form">
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <label asp-for="NombreUsuario">Usuario</label>
+            <input asp-for="NombreUsuario" autocomplete="username" />
+
+            <label asp-for="Contrasena">Contrasena</label>
+            <input asp-for="Contrasena" type="password" autocomplete="current-password" />
+
+            <button type="submit" class="primary-action">Entrar</button>
+        </form>
+
+        <p class="small-note login-hint">No tienes cuenta? <a asp-page="/Register" asp-route-returnUrl="@Model.ReturnUrl">Crear cuenta</a></p>
+        <p class="small-note login-hint">Prueba: <strong>demo</strong> / <strong>1234</strong></p>
+    </div>
+</section>

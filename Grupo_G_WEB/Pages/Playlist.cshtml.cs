@@ -7,8 +7,6 @@ namespace Grupo_G_WEB.Pages;
 
 public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
 {
-    private const int DefaultUserId = 1;
-
     [BindProperty(SupportsGet = true)]
     public int? Id { get; set; }
 
@@ -37,26 +35,42 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
     [TempData]
     public string? MensajeError { get; set; }
 
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
+        if (CurrentUserId is null)
+        {
+            return RedirectToPage("/Login", new { returnUrl = Url.Page("/Playlist", new { id = Id }) });
+        }
+
         await LoadAsync(Id);
+        return Page();
     }
 
     public async Task<IActionResult> OnPostCrearAsync()
     {
+        if (CurrentUserId is null)
+        {
+            return RedirectToPage("/Login", new { returnUrl = Url.Page("/Playlist", new { id = Id }) });
+        }
+
         if (string.IsNullOrWhiteSpace(NombreNuevaPlaylist))
         {
             MensajeError = "Debes escribir un nombre para la playlist.";
             return RedirectToPage(new { id = Id });
         }
 
-        var playlist = await catalogService.CreatePlaylistAsync(DefaultUserId, NombreNuevaPlaylist.Trim(), DescripcionNuevaPlaylist?.Trim());
+        var playlist = await catalogService.CreatePlaylistAsync(CurrentUserId.Value, NombreNuevaPlaylist.Trim(), DescripcionNuevaPlaylist?.Trim());
         MensajeExito = "Playlist creada correctamente.";
         return RedirectToPage(new { id = playlist.Id });
     }
 
     public async Task<IActionResult> OnPostEditarAsync(int id)
     {
+        if (CurrentUserId is null)
+        {
+            return RedirectToPage("/Login", new { returnUrl = Url.Page("/Playlist", new { id }) });
+        }
+
         if (string.IsNullOrWhiteSpace(NombreEditarPlaylist))
         {
             MensajeError = "El nombre de la playlist no puede quedar vacio.";
@@ -76,6 +90,11 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
 
     public async Task<IActionResult> OnPostEliminarAsync(int id)
     {
+        if (CurrentUserId is null)
+        {
+            return RedirectToPage("/Login", new { returnUrl = Url.Page("/Playlist") });
+        }
+
         var result = await catalogService.DeletePlaylistAsync(id);
         if (!result.Success)
         {
@@ -83,7 +102,7 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
             return RedirectToPage(new { id });
         }
 
-        var playlists = await catalogService.GetPlaylistsAsync(DefaultUserId);
+        var playlists = await catalogService.GetPlaylistsAsync(CurrentUserId.Value);
         var nextId = playlists.FirstOrDefault()?.Id;
         MensajeExito = "Playlist eliminada.";
         return nextId is null ? RedirectToPage() : RedirectToPage(new { id = nextId });
@@ -91,6 +110,11 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
 
     public async Task<IActionResult> OnPostAgregarCancionAsync(int id)
     {
+        if (CurrentUserId is null)
+        {
+            return RedirectToPage("/Login", new { returnUrl = Url.Page("/Playlist", new { id }) });
+        }
+
         if (IdCancionAgregar <= 0)
         {
             MensajeError = "Selecciona una cancion para agregar.";
@@ -110,6 +134,11 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
 
     public async Task<IActionResult> OnPostQuitarCancionAsync(int id, int idCancion)
     {
+        if (CurrentUserId is null)
+        {
+            return RedirectToPage("/Login", new { returnUrl = Url.Page("/Playlist", new { id }) });
+        }
+
         var result = await catalogService.RemoveSongFromPlaylistAsync(id, idCancion);
         if (!result.Success)
         {
@@ -123,7 +152,7 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
 
     private async Task LoadAsync(int? selectedId)
     {
-        Playlists = await catalogService.GetPlaylistsAsync(DefaultUserId);
+        Playlists = await catalogService.GetPlaylistsAsync(CurrentUserId!.Value);
         CatalogoCanciones = await catalogService.SearchSongsAsync(null);
 
         var currentId = selectedId ?? Playlists.FirstOrDefault()?.Id;
@@ -133,6 +162,13 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
         }
 
         Playlist = await catalogService.GetPlaylistDetalleAsync(currentId.Value);
+        if (Playlist?.IdUsuario != CurrentUserId.Value)
+        {
+            Playlist = null;
+            MensajeError = "Esta playlist pertenece a otro usuario.";
+            return;
+        }
+
         if (Playlist is not null)
         {
             NombreEditarPlaylist = Playlist.Nombre;
@@ -140,4 +176,6 @@ public class PlaylistModel(IMusicCatalogService catalogService) : PageModel
             Id = Playlist.Id;
         }
     }
+
+    private int? CurrentUserId => HttpContext.Session.GetInt32("UserId");
 }

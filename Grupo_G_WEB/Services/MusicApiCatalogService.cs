@@ -15,6 +15,34 @@ public class MusicApiCatalogService(HttpClient httpClient) : IMusicCatalogServic
 
     private readonly HttpClient _httpClient = httpClient;
 
+    public async Task<LoginResponse?> LoginAsync(string nombreUsuario, string contrasena)
+    {
+        var response = await _httpClient.PostAsJsonAsync("/api/auth/login", new LoginRequest
+        {
+            NombreUsuario = nombreUsuario,
+            Contrasena = contrasena
+        }, JsonOptions);
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<LoginResponse>(JsonOptions);
+    }
+
+    public async Task<(LoginResponse? User, string? Error)> RegisterAsync(RegisterRequest request)
+    {
+        var response = await _httpClient.PostAsJsonAsync("/api/auth/register", request, JsonOptions);
+        if (!response.IsSuccessStatusCode)
+        {
+            return (null, await ReadErrorMessageAsync(response));
+        }
+
+        return (await response.Content.ReadFromJsonAsync<LoginResponse>(JsonOptions), null);
+    }
+
     public async Task<IReadOnlyList<Playlist>> GetPlaylistsAsync(int idUsuario = 1)
         => await _httpClient.GetFromJsonAsync<List<Playlist>>($"/api/playlists?idUsuario={idUsuario}", JsonOptions) ?? [];
 
@@ -150,7 +178,9 @@ public class MusicApiCatalogService(HttpClient httpClient) : IMusicCatalogServic
             UrlImagenArtista = artist?.UrlImagen,
             IdAlbum = song.IdAlbum,
             NombreAlbum = song.NombreAlbum,
-            AnioAlbum = song.Anio
+            AnioAlbum = song.Anio,
+            UrlPortadaAlbum = song.UrlPortadaAlbum,
+            UrlImagenCancion = song.UrlImagenCancion
         }).ToList();
     }
 
@@ -193,5 +223,7 @@ public class MusicApiCatalogService(HttpClient httpClient) : IMusicCatalogServic
         public int IdAlbum { get; set; }
         public string NombreAlbum { get; set; } = string.Empty;
         public int? Anio { get; set; }
+        public string? UrlPortadaAlbum { get; set; }
+        public string? UrlImagenCancion { get; set; }
     }
 }

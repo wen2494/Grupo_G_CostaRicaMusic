@@ -5,6 +5,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".CostaRicaMusic.Session";
+    options.IdleTimeout = TimeSpan.FromHours(6);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.Configure<MusicApiOptions>(builder.Configuration.GetSection(MusicApiOptions.SectionName));
 builder.Services.AddHttpClient<IMusicCatalogService, MusicApiCatalogService>((serviceProvider, client) =>
 {
@@ -29,6 +37,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 app.UseAuthorization();
 
 app.MapRazorPages();

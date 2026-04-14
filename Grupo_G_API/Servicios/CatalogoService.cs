@@ -217,7 +217,8 @@ public class CatalogoService(IJsonCatalogStore store) : ICatalogoService
                     NombreArtista = artist.Nombre,
                     IdAlbum = album.Id,
                     NombreAlbum = album.Nombre,
-                    UrlPortadaAlbum = album.UrlPortada
+                    UrlPortadaAlbum = album.UrlPortada,
+                    UrlImagenCancion = song.UrlImagen
                 };
             })
             .Where(item => item is not null)
@@ -255,7 +256,8 @@ public class CatalogoService(IJsonCatalogStore store) : ICatalogoService
             IdAlbum = album.Id,
             NombreAlbum = album.Nombre,
             AnioAlbum = album.Anio,
-            UrlPortadaAlbum = album.UrlPortada
+            UrlPortadaAlbum = album.UrlPortada,
+            UrlImagenCancion = song.UrlImagen
         };
     }
 }

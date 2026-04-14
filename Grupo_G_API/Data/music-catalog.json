@@ -1,77 +1,375 @@
 {
-  "Artistas": [
+  "Usuarios": [
     {
       "Id": 1,
-      "Nombre": "Costa Rica Music Sessions",
-      "Biografia": "Catalogo de prueba compartido para el proyecto universitario.",
-      "UrlImagen": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format\u0026fit=crop\u0026w=800\u0026q=80",
-      "FechaCreacion": "2026-03-25T00:00:00Z"
+      "NombreUsuario": "demo",
+      "Email": "demo@costaricamusic.local",
+      "ContrasenaHash": "03AC674216F3E15C761EE1A5E255F067953623C8B388B4459E13F978D7C846F4",
+      "NombreCompleto": "Usuario Demo",
+      "Activo": true,
+      "FechaRegistro": "2026-04-14T00:00:00Z"
     },
     {
       "Id": 2,
-      "Nombre": "Open Sound Lab",
-      "Biografia": "Coleccion de temas instrumentales para demos y pruebas.",
-      "UrlImagen": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format\u0026fit=crop\u0026w=800\u0026q=80",
-      "FechaCreacion": "2026-03-25T00:00:00Z"
+      "NombreUsuario": "maria",
+      "Email": "maria@costaricamusic.local",
+      "ContrasenaHash": "626E3C805E77EEB472C42C6BE607BE2AF7AC5C08FD7050F278E0330FE81ABF57",
+      "NombreCompleto": "Maria",
+      "Activo": true,
+      "FechaRegistro": "2026-04-14T00:00:00Z"
+    },
+    {
+      "Id": 3,
+      "NombreUsuario": "sebas",
+      "Email": "sebas@gmail.com",
+      "ContrasenaHash": "03AC674216F3E15C761EE1A5E255F067953623C8B388B4459E13F978D7C846F4",
+      "NombreCompleto": "Sebastian",
+      "Activo": true,
+      "FechaRegistro": "2026-04-14T21:54:56.3711169Z"
+    }
+  ],
+  "Artistas": [
+    {
+      "Id": 1,
+      "Nombre": "Cuarteto de nos",
+      "Biografia": "El Cuarteto de Nos es una banda de rock uruguaya formada en Montevideo en los a\u00F1os 80. Est\u00E1 integrada por Roberto Musso, \u00C1lvaro Pintos, Gustavo Antu\u00F1a y Santiago Marrero.",
+      "UrlImagen": "/media/images/artists/Cuarteto_De_Nos_Profile.jpg",
+      "FechaCreacion": "1980-05-22T00:00:00Z"
+    },
+    {
+      "Id": 2,
+      "Nombre": "Bacilos",
+      "Biografia": "Bacilos es una banda estadounidense de pop latino formada en el a\u00F1o 1997 en Miami, Florida, por el colombiano Jorge Villamizar, el puertorrique\u00F1o Jos\u00E9 Javier \u00ABJJ\u00BB Freire y el brasile\u00F1o Andr\u00E9 Lopes. Su m\u00FAsica es de g\u00E9nero pop en sus variantes latina, folk, rock y fusi\u00F3n latinoamericana.",
+      "UrlImagen": "/media/images/artists/Bacilos.jpg",
+      "FechaCreacion": "1995-05-22T00:00:00Z"
+    },
+    {
+      "Id": 3,
+      "Nombre": "Man\u00E1",
+      "Biografia": "Man\u00E1 es una banda mexicana de rock en espa\u00F1ol y rock pop formada en 1986 en Guadalajara, Jalisco. Actualmente, la integran Fher Olvera, Juan Calleros, \u00C1lex Gonz\u00E1lez y Sergio Vall\u00EDn.\u200B Ha vendido m\u00E1s de 50 millones de discos en todo el mundo.\u200B\u200B",
+      "UrlImagen": "/media/images/artists/Mana.jfif",
+      "FechaCreacion": "1986-05-22T00:00:00Z"
     }
   ],
   "Albumes": [
     {
       "Id": 1,
-      "Nombre": "Demo Vibes",
+      "Nombre": "Puertas",
       "IdArtista": 1,
-      "Anio": 2026,
-      "UrlPortada": "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?auto=format\u0026fit=crop\u0026w=900\u0026q=80",
-      "FechaCreacion": "2026-03-25T00:00:00Z"
+      "Anio": 2025,
+      "UrlPortada": "/media/images/albums/Puertas.JFIF",
+      "FechaCreacion": "2025-05-22T00:00:00Z"
     },
     {
       "Id": 2,
-      "Nombre": "Campus Nights",
+      "Nombre": "Jueves",
+      "IdArtista": 1,
+      "Anio": 2019,
+      "UrlPortada": "/media/images/albums/Jueves.jfif",
+      "FechaCreacion": "2019-05-22T00:00:00Z"
+    },
+    {
+      "Id": 3,
+      "Nombre": "Caraluna",
       "IdArtista": 2,
-      "Anio": 2026,
-      "UrlPortada": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format\u0026fit=crop\u0026w=900\u0026q=80",
-      "FechaCreacion": "2026-03-25T00:00:00Z"
+      "Anio": 2002,
+      "UrlPortada": "/media/images/albums/Caraluna.jfif",
+      "FechaCreacion": "2002-05-22T00:00:00Z"
+    },
+    {
+      "Id": 4,
+      "Nombre": "\u00BFD\u00F3nde jugar\u00E1n los ni\u00F1os?",
+      "IdArtista": 3,
+      "Anio": 1992,
+      "UrlPortada": "/media/images/albums/Donde jugaran los ni\u00F1os.jfif",
+      "FechaCreacion": "2002-05-22T00:00:00Z"
     }
   ],
   "Canciones": [
     {
       "Id": 1,
-      "Nombre": "Ocean Drive",
+      "Nombre": "Esplin",
       "IdAlbum": 1,
       "IdArtista": 1,
-      "DuracionSegundos": 372,
+      "DuracionSegundos": 455,
       "NumeroPista": 1,
-      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "RutaArchivo": "/media/audio/Cuarteto de Nos_Esplin.mp3",
+      "UrlImagen": "/media/images/songs/Esplin.jpg",
       "FechaCreacion": "2026-03-25T00:00:00Z"
     },
     {
       "Id": 2,
-      "Nombre": "Night Library",
+      "Nombre": "Puertas",
       "IdAlbum": 1,
       "IdArtista": 1,
-      "DuracionSegundos": 398,
+      "DuracionSegundos": 348,
       "NumeroPista": 2,
-      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      "RutaArchivo": "/media/audio/El Cuarteto de Nos_Puertas.mp3",
+      "UrlImagen": "/media/images/songs/Puertas.JFIF",
       "FechaCreacion": "2026-03-25T00:00:00Z"
     },
     {
       "Id": 3,
-      "Nombre": "Code and Coffee",
-      "IdAlbum": 2,
-      "IdArtista": 2,
-      "DuracionSegundos": 360,
-      "NumeroPista": 1,
-      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+      "Nombre": "Ganaron los malos",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 401,
+      "NumeroPista": 3,
+      "RutaArchivo": "/media/audio/El Cuarteto de Nos_Ganaron los malos.mp3",
+      "UrlImagen": "/media/images/songs/Ganaron los malos.jpg",
       "FechaCreacion": "2026-03-25T00:00:00Z"
     },
     {
       "Id": 4,
-      "Nombre": "Sunset Review",
+      "Nombre": "En el cuarto de Nico",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 442,
+      "NumeroPista": 4,
+      "RutaArchivo": "/media/audio/Cuarteto De Nos_En el cuarto de Nico.mp3",
+      "UrlImagen": "/media/images/songs/En el cuarto de Nico.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 5,
+      "Nombre": "El astronomo que no podia ver el cielo",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 358,
+      "NumeroPista": 5,
+      "RutaArchivo": "/media/audio/El Cuarteto de Nos_El astronomo que no podia ver el cielo.mp3",
+      "UrlImagen": "/media/images/songs/El astronomo que no podia ver el cielo.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 6,
+      "Nombre": "El Perro de Alcibiades",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 346,
+      "NumeroPista": 6,
+      "RutaArchivo": "/media/audio/El Cuarteto de Nos - Miren para alla!.mp3",
+      "UrlImagen": "/media/images/songs/El perro.JFIF",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 7,
+      "Nombre": "Cara de nada",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 340,
+      "NumeroPista": 7,
+      "RutaArchivo": "/media/audio/Cuarteto de Nos - CARA DE NADA.mp3",
+      "UrlImagen": "/media/images/songs/Cara de nada.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 8,
+      "Nombre": "Camello patagonico",
+      "IdAlbum": 1,
+      "IdArtista": 1,
+      "DuracionSegundos": 320,
+      "NumeroPista": 8,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos_Camello patagonico.mp3",
+      "UrlImagen": "/media/images/songs/Camello Patagonico.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 10,
+      "Nombre": "Mario Neta",
       "IdAlbum": 2,
-      "IdArtista": 2,
-      "DuracionSegundos": 412,
+      "IdArtista": 1,
+      "DuracionSegundos": 354,
+      "NumeroPista": 1,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Mario Neta.mp3",
+      "UrlImagen": "/media/images/songs/Mario Neta.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 11,
+      "Nombre": "Punta Cana",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 315,
       "NumeroPista": 2,
-      "RutaArchivo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Punta Cana.mp3",
+      "UrlImagen": "/media/images/songs/Punta Cana.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 12,
+      "Nombre": "Anonimo",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 338,
+      "NumeroPista": 3,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Anonimo.mp3",
+      "UrlImagen": "/media/images/songs/Anonimo.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 13,
+      "Nombre": "Hombre con alas",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 347,
+      "NumeroPista": 4,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Hombre con alas.mp3",
+      "UrlImagen": "/media/images/songs/Hombre con alas.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 14,
+      "Nombre": "Tiburones en el bosque",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 315,
+      "NumeroPista": 5,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Tiburones en el bosque.mp3",
+      "UrlImagen": "/media/images/songs/Tiburones en el bosque.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 15,
+      "Nombre": "Que empiece el juego",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 356,
+      "NumeroPista": 6,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Que empiece el juego.mp3",
+      "UrlImagen": "/media/images/songs/Que empiece el juego.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 16,
+      "Nombre": "Llego papa",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 321,
+      "NumeroPista": 7,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Llego papa.mp3",
+      "UrlImagen": "/media/images/songs/Llego papa.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 17,
+      "Nombre": "Contrapunto para Humano y Computadora",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 550,
+      "NumeroPista": 8,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Contrapunto para Humano y Computadora.mp3",
+      "UrlImagen": "/media/images/songs/Contrapunto para Humano y Computadora.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 18,
+      "Nombre": "Fallaste Nostradamus",
+      "IdAlbum": 2,
+      "IdArtista": 1,
+      "DuracionSegundos": 259,
+      "NumeroPista": 9,
+      "RutaArchivo": "/media/audio/El Cuarteto de nos - Fallaste Nostradamus.mp3",
+      "UrlImagen": "/media/images/songs/Fallaste Nostradamus.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 19,
+      "Nombre": "Caraluna",
+      "IdAlbum": 3,
+      "IdArtista": 2,
+      "DuracionSegundos": 259,
+      "NumeroPista": 1,
+      "RutaArchivo": "/media/audio/Bacilos - Caraluna.mp3",
+      "UrlImagen": "/media/images/songs/Caraluna.jfif",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 20,
+      "Nombre": "Mi primer millon",
+      "IdAlbum": 3,
+      "IdArtista": 2,
+      "DuracionSegundos": 354,
+      "NumeroPista": 2,
+      "RutaArchivo": "/media/audio/Bacilos - Mi primer millon.mp3",
+      "UrlImagen": "/media/images/songs/Mi primer millon.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 21,
+      "Nombre": "Solo un segundo",
+      "IdAlbum": 3,
+      "IdArtista": 2,
+      "DuracionSegundos": 358,
+      "NumeroPista": 3,
+      "RutaArchivo": "/media/audio/Bacilos - Solo un segundo.mp3",
+      "UrlImagen": "/media/images/songs/Solo un segundo.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 22,
+      "Nombre": "Viejo",
+      "IdAlbum": 3,
+      "IdArtista": 2,
+      "DuracionSegundos": 507,
+      "NumeroPista": 4,
+      "RutaArchivo": "/media/audio/Bacilos - Viejo.mp3",
+      "UrlImagen": "/media/images/songs/Viejo.jfif",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 23,
+      "Nombre": "Odio el silencio",
+      "IdAlbum": 3,
+      "IdArtista": 2,
+      "DuracionSegundos": 345,
+      "NumeroPista": 5,
+      "RutaArchivo": "/media/audio/Bacilos - odio el silencio bacilos.mp3",
+      "UrlImagen": "/media/images/songs/Caraluna.jfif",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 24,
+      "Nombre": "De pies a cabeza",
+      "IdAlbum": 4,
+      "IdArtista": 3,
+      "DuracionSegundos": 439,
+      "NumeroPista": 1,
+      "RutaArchivo": "/media/audio/De pies a cabeza - Man\u00E1..mp3",
+      "UrlImagen": "/media/images/songs/De pies a cabeza.jfif",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 25,
+      "Nombre": "Oye mi amor",
+      "IdAlbum": 4,
+      "IdArtista": 3,
+      "DuracionSegundos": 459,
+      "NumeroPista": 2,
+      "RutaArchivo": "/media/audio/Man\u00E1 - Oye Mi Amor.mp3",
+      "UrlImagen": "/media/images/songs/Oye mi amor.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 26,
+      "Nombre": "Cachito",
+      "IdAlbum": 4,
+      "IdArtista": 3,
+      "DuracionSegundos": 519,
+      "NumeroPista": 3,
+      "RutaArchivo": "/media/audio/Cachito.mp3",
+      "UrlImagen": "/media/images/songs/Cachito.jpg",
+      "FechaCreacion": "2026-03-25T00:00:00Z"
+    },
+    {
+      "Id": 27,
+      "Nombre": "Vivir sin aire",
+      "IdAlbum": 4,
+      "IdArtista": 3,
+      "DuracionSegundos": 455,
+      "NumeroPista": 4,
+      "RutaArchivo": "/media/audio/Man\u00E1 - Vivir Sin Aire.mp3",
+      "UrlImagen": "/media/images/songs/Oye mi amor.jpg",
       "FechaCreacion": "2026-03-25T00:00:00Z"
     }
   ],
@@ -79,46 +377,53 @@
     {
       "Id": 1,
       "IdUsuario": 1,
-      "Nombre": "Favoritas del equipo",
-      "Descripcion": "Lista compartida para demo y pruebas.",
-      "FechaCreacion": "2026-03-25T00:00:00Z"
+      "Nombre": "Prueba para demo",
+      "Descripcion": "Demo",
+      "FechaCreacion": "2026-04-14T21:49:27.5670901Z"
     },
     {
       "Id": 2,
-      "IdUsuario": 1,
-      "Nombre": "Prueba de Playlist",
-      "Descripcion": "Demooooooo",
-      "FechaCreacion": "2026-03-25T19:33:55.1089698Z"
+      "IdUsuario": 3,
+      "Nombre": "Sebas",
+      "Descripcion": "Prueba",
+      "FechaCreacion": "2026-04-14T21:55:23.4674899Z"
     }
   ],
   "PlaylistCanciones": [
     {
       "Id": 1,
       "IdPlaylist": 1,
-      "IdCancion": 1,
+      "IdCancion": 12,
       "Orden": 1,
-      "FechaAgregado": "2026-03-25T00:00:00Z"
+      "FechaAgregado": "2026-04-14T21:49:29.5846476Z"
     },
     {
       "Id": 2,
       "IdPlaylist": 1,
-      "IdCancion": 3,
+      "IdCancion": 8,
       "Orden": 2,
-      "FechaAgregado": "2026-03-25T00:00:00Z"
+      "FechaAgregado": "2026-04-14T21:49:31.283423Z"
     },
     {
       "Id": 3,
       "IdPlaylist": 2,
-      "IdCancion": 3,
+      "IdCancion": 13,
       "Orden": 1,
-      "FechaAgregado": "2026-03-25T19:34:01.7109089Z"
+      "FechaAgregado": "2026-04-14T21:55:44.0921466Z"
     },
     {
       "Id": 4,
       "IdPlaylist": 2,
       "IdCancion": 4,
       "Orden": 2,
-      "FechaAgregado": "2026-03-25T19:34:05.4705683Z"
+      "FechaAgregado": "2026-04-14T21:55:46.6727273Z"
+    },
+    {
+      "Id": 5,
+      "IdPlaylist": 2,
+      "IdCancion": 1,
+      "Orden": 3,
+      "FechaAgregado": "2026-04-14T21:55:56.1130005Z"
     }
   ]
 }

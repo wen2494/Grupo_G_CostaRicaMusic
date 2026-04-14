@@ -6,6 +6,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IJsonCatalogStore, JsonCatalogStore>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IArtistaService, ArtistaService>();
 builder.Services.AddScoped<ICatalogoService, CatalogoService>();
 

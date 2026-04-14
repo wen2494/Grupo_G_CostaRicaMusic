@@ -1,0 +1,40 @@
+@page "/register"
+@model RegisterModel
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<section class="login-shell">
+    <div class="login-card">
+        <p class="eyebrow">Costa Rica Music</p>
+        <h1>Crear cuenta</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+        {
+            <div class="flash-message error-message">@Model.MensajeError</div>
+        }
+
+        <form method="post" class="playlist-form">
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <label asp-for="NombreUsuario">Usuario</label>
+            <input asp-for="NombreUsuario" autocomplete="username" />
+
+            <label asp-for="NombreCompleto">Nombre</label>
+            <input asp-for="NombreCompleto" autocomplete="name" />
+
+            <label asp-for="Email">Correo</label>
+            <input asp-for="Email" type="email" autocomplete="email" />
+
+            <label asp-for="Contrasena">Contrasena</label>
+            <input asp-for="Contrasena" type="password" autocomplete="new-password" />
+
+            <label asp-for="ConfirmarContrasena">Confirmar</label>
+            <input asp-for="ConfirmarContrasena" type="password" autocomplete="new-password" />
+
+            <button type="submit" class="primary-action">Crear cuenta</button>
+        </form>
+
+        <p class="small-note login-hint">Ya tienes cuenta? <a asp-page="/Login" asp-route-returnUrl="@Model.ReturnUrl">Entrar</a></p>
+    </div>
+</section>

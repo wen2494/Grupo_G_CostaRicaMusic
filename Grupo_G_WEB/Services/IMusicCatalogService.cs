@@ -5,6 +5,8 @@ namespace Grupo_G_WEB.Services;
 
 public interface IMusicCatalogService
 {
+    Task<LoginResponse?> LoginAsync(string nombreUsuario, string contrasena);
+    Task<(LoginResponse? User, string? Error)> RegisterAsync(RegisterRequest request);
     Task<IReadOnlyList<Playlist>> GetPlaylistsAsync(int idUsuario = 1);
     Task<PlaylistDetalleDto?> GetPlaylistDetalleAsync(int playlistId);
     Task<Playlist> CreatePlaylistAsync(int idUsuario, string nombre, string? descripcion);

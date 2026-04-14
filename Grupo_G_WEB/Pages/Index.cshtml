@@ -4,17 +4,36 @@
     ViewData["Title"] = "Inicio";
 }
 
-<section class="hero-card">
-    <p class="eyebrow">Costa Rica Music</p>
-    <h1>Tu musica ahora viene del backend real.</h1>
-    <p class="small-note">Selecciona una cancion y usa el reproductor inferior para controlar la reproduccion.</p>
+<section class="hero-card home-hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Costa Rica Music</p>
+        <h1>Tu musica.</h1>
+    </div>
+
+    <div class="hero-gallery" aria-label="Portadas destacadas">
+        @foreach (var cancion in Model.Canciones.Take(6))
+        {
+            var cover = cancion.UrlImagenCancion ?? cancion.UrlPortadaAlbum;
+            <button type="button"
+                    class="hero-cover track-btn"
+                    style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"
+                    data-track-id="@cancion.Id"
+                    data-src="@cancion.RutaArchivo"
+                    data-title="@cancion.NombreCancion"
+                    data-artist="@cancion.NombreArtista"
+                    data-album="@cancion.NombreAlbum"
+                    data-cover="@cover">
+                <span>@cancion.NombreCancion</span>
+            </button>
+        }
+    </div>
 </section>
 
 <section class="home-grid">
     <div class="library-card">
         <div class="section-heading">
-            <h2>Catalogo disponible</h2>
-            <p class="small-note">@Model.Canciones.Count canciones listas para probar.</p>
+            <h2>Canciones</h2>
+            <p class="small-note">@Model.Canciones.Count pistas</p>
         </div>
         <button type="button" class="primary-action collection-action" data-play-collection=".home-catalog-list">Reproducir todo</button>
 
@@ -27,6 +46,7 @@
             <div class="track-list home-catalog-list">
                 @foreach (var cancion in Model.Canciones)
                 {
+                    var cover = cancion.UrlImagenCancion ?? cancion.UrlPortadaAlbum;
                     <button type="button"
                             class="track-btn"
                             data-track-id="@cancion.Id"
@@ -34,18 +54,43 @@
                             data-title="@cancion.NombreCancion"
                             data-artist="@cancion.NombreArtista"
                             data-album="@cancion.NombreAlbum"
-                            data-cover="@cancion.UrlPortadaAlbum">
-                        <span class="track-title">@cancion.NombreCancion</span>
-                        <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
+                            data-cover="@cover">
+                        <span class="track-cover" style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"></span>
+                        <span class="track-copy">
+                            <span class="track-title">@cancion.NombreCancion</span>
+                            <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
+                        </span>
                     </button>
                 }
             </div>
         }
     </div>
 
-    <div class="player-card">
-        <p class="now-playing-label">Demo funcional</p>
-        <h2>Reproductor conectado</h2>
-        <p class="small-note">La portada, busqueda, albumes, artistas y playlists usan la misma API para reproducir audio.</p>
+    <div class="discover-card">
+        <div class="section-heading">
+            <p class="eyebrow">Descubre</p>
+            <h2>Biblioteca</h2>
+        </div>
+
+        <div class="quick-links-grid">
+            <a asp-page="/Artist" class="quick-link">
+                <i class="bi bi-person-badge"></i>
+                <span>@Model.Artistas.Count artistas</span>
+            </a>
+            <a asp-page="/Album" class="quick-link">
+                <i class="bi bi-disc"></i>
+                <span>@Model.Albumes.Count albumes</span>
+            </a>
+        </div>
+
+        <div class="mini-media-stack">
+            @foreach (var artist in Model.Artistas.Take(4))
+            {
+                <a asp-page="/Artist" asp-route-id="@artist.Id" class="mini-media-link">
+                    <span class="mini-artist-thumb artist-artwork" style="@(string.IsNullOrWhiteSpace(artist.UrlImagen) ? null : $"background-image: url('{artist.UrlImagen}')")"></span>
+                    <span>@artist.Nombre</span>
+                </a>
+            }
+        </div>
     </div>
 </section>

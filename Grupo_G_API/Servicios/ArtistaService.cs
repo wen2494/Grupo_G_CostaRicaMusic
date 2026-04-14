@@ -42,7 +42,9 @@ namespace Grupo_G_API.Servicios
                         NombreArtista = artist.Nombre,
                         IdAlbum = album.Id,
                         NombreAlbum = album.Nombre,
-                        Anio = album.Anio
+                        Anio = album.Anio,
+                        UrlPortadaAlbum = album.UrlPortada,
+                        UrlImagenCancion = item.UrlImagen
                     };
                 })
                 .ToList();

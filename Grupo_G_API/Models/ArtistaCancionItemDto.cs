@@ -12,5 +12,7 @@ namespace Grupo_G_API.Models
         public int IdAlbum { get; set; }
         public string NombreAlbum { get; set; } = string.Empty;
         public int? Anio { get; set; }
+        public string? UrlPortadaAlbum { get; set; }
+        public string? UrlImagenCancion { get; set; }
     }
 }

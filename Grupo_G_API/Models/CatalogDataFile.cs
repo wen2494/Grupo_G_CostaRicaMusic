@@ -2,6 +2,7 @@ namespace Grupo_G_API.Models;
 
 public class CatalogDataFile
 {
+    public List<Usuario> Usuarios { get; set; } = [];
     public List<Artista> Artistas { get; set; } = [];
     public List<Album> Albumes { get; set; } = [];
     public List<Cancion> Canciones { get; set; } = [];

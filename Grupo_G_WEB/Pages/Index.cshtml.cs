@@ -7,9 +7,13 @@ namespace Grupo_G_WEB.Pages;
 public class IndexModel(IMusicCatalogService catalogService) : PageModel
 {
     public IReadOnlyList<CancionDetalleDto> Canciones { get; private set; } = [];
+    public IReadOnlyList<Artista> Artistas { get; private set; } = [];
+    public IReadOnlyList<Album> Albumes { get; private set; } = [];
 
     public async Task OnGetAsync()
     {
         Canciones = (await catalogService.SearchSongsAsync(null)).Take(12).ToList();
+        Artistas = await catalogService.SearchArtistsAsync(null);
+        Albumes = await catalogService.SearchAlbumsAsync(null);
     }
 }

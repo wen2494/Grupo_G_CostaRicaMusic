@@ -1,24 +1,67 @@
-@page "/album/{id:int}"
+@page "/album/{id:int?}"
 @model AlbumModel
 @{
-    ViewData["Title"] = "Album";
+    ViewData["Title"] = "Albumes";
 }
 
 <section class="route-card">
-    <h2>Album</h2>
-
     @if (Model.Album is null)
     {
-        <p>Album no encontrado.</p>
+        <div class="section-heading">
+            <p class="eyebrow">Albumes</p>
+            <h2>Por artista</h2>
+        </div>
+
+        @if (Model.Albumes.Count == 0)
+        {
+            <p>No hay albumes disponibles.</p>
+        }
+        else
+        {
+            <div class="album-groups">
+                @foreach (var artist in Model.Artistas)
+                {
+                    var albums = Model.Albumes.Where(album => album.IdArtista == artist.Id).ToList();
+                    if (albums.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    <section class="album-group">
+                        <div class="album-group-heading">
+                            <span class="mini-artist-thumb artist-artwork" style="@(string.IsNullOrWhiteSpace(artist.UrlImagen) ? null : $"background-image: url('{artist.UrlImagen}')")"></span>
+                            <h3>@artist.Nombre</h3>
+                        </div>
+
+                        <div class="media-grid">
+                            @foreach (var album in albums)
+                            {
+                                <a asp-page="/Album" asp-route-id="@album.Id" class="media-tile">
+                                    <span class="media-thumb" style="@(string.IsNullOrWhiteSpace(album.UrlPortada) ? null : $"background-image: url('{album.UrlPortada}')")"></span>
+                                    <span>@album.Nombre</span>
+                                </a>
+                            }
+                        </div>
+                    </section>
+                }
+            </div>
+        }
     }
     else
     {
-        <h3>@Model.Album.Nombre</h3>
-        <p class="small-note">Anio: @(Model.Album.Anio?.ToString() ?? "-")</p>
+        <div class="entity-hero">
+            <div class="entity-artwork" style="@(string.IsNullOrWhiteSpace(Model.Album.UrlPortada) ? null : $"background-image: url('{Model.Album.UrlPortada}')")"></div>
+            <div>
+                <p class="eyebrow">Album</p>
+                <h2>@Model.Album.Nombre</h2>
+                <p class="small-note">@(Model.Album.Anio?.ToString() ?? "-") · @Model.Canciones.Count canciones</p>
+            </div>
+        </div>
 
         <div class="track-list compact">
             @foreach (var cancion in Model.Canciones)
             {
+                var cover = cancion.UrlImagenCancion ?? cancion.UrlPortadaAlbum;
                 <button type="button"
                         class="track-btn"
                         data-track-id="@cancion.Id"
@@ -26,9 +69,12 @@
                         data-title="@cancion.NombreCancion"
                         data-artist="@cancion.NombreArtista"
                         data-album="@cancion.NombreAlbum"
-                        data-cover="@cancion.UrlPortadaAlbum">
-                    <span class="track-title">@cancion.NombreCancion</span>
-                    <span class="track-meta">Pista @cancion.NumeroPista · @cancion.NombreArtista</span>
+                        data-cover="@cover">
+                    <span class="track-cover" style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"></span>
+                    <span class="track-copy">
+                        <span class="track-title">@cancion.NombreCancion</span>
+                        <span class="track-meta">Pista @cancion.NumeroPista · @cancion.NombreArtista</span>
+                    </span>
                 </button>
             }
         </div>

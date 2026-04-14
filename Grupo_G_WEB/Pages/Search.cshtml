@@ -5,8 +5,10 @@
 }
 
 <section class="route-card">
-    <h2>Buscar</h2>
-    <p class="small-note">Resultados agrupados por canciones, artistas y albumes.</p>
+    <div class="section-heading">
+        <p class="eyebrow">Explorar</p>
+        <h2>Buscar</h2>
+    </div>
 
     <h3>Canciones</h3>
     @if (Model.Canciones.Count == 0)
@@ -18,6 +20,7 @@
         <div class="track-list compact">
             @foreach (var song in Model.Canciones)
             {
+                var cover = song.UrlImagenCancion ?? song.UrlPortadaAlbum;
                 <button type="button"
                         class="track-btn"
                         data-track-id="@song.Id"
@@ -25,27 +28,36 @@
                         data-title="@song.NombreCancion"
                         data-artist="@song.NombreArtista"
                         data-album="@song.NombreAlbum"
-                        data-cover="@song.UrlPortadaAlbum">
-                    <span class="track-title">@song.NombreCancion</span>
-                    <span class="track-meta">@song.NombreArtista · @song.NombreAlbum</span>
+                        data-cover="@cover">
+                    <span class="track-cover" style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"></span>
+                    <span class="track-copy">
+                        <span class="track-title">@song.NombreCancion</span>
+                        <span class="track-meta">@song.NombreArtista · @song.NombreAlbum</span>
+                    </span>
                 </button>
             }
         </div>
     }
 
     <h3>Artistas</h3>
-    <ul class="link-list">
+    <div class="media-grid">
         @foreach (var artist in Model.Artistas)
         {
-            <li><a asp-page="/Artist" asp-route-id="@artist.Id">@artist.Nombre</a></li>
+            <a asp-page="/Artist" asp-route-id="@artist.Id" class="media-tile">
+                <span class="media-thumb artist-artwork" style="@(string.IsNullOrWhiteSpace(artist.UrlImagen) ? null : $"background-image: url('{artist.UrlImagen}')")"></span>
+                <span>@artist.Nombre</span>
+            </a>
         }
-    </ul>
+    </div>
 
     <h3>Albumes</h3>
-    <ul class="link-list">
+    <div class="media-grid">
         @foreach (var album in Model.Albumes)
         {
-            <li><a asp-page="/Album" asp-route-id="@album.Id">@album.Nombre</a></li>
+            <a asp-page="/Album" asp-route-id="@album.Id" class="media-tile">
+                <span class="media-thumb" style="@(string.IsNullOrWhiteSpace(album.UrlPortada) ? null : $"background-image: url('{album.UrlPortada}')")"></span>
+                <span>@album.Nombre</span>
+            </a>
         }
-    </ul>
+    </div>
 </section>

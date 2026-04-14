@@ -1,24 +1,49 @@
-@page "/artist/{id:int}"
+@page "/artist/{id:int?}"
 @model ArtistModel
 @{
-    ViewData["Title"] = "Artista";
+    ViewData["Title"] = "Artistas";
 }
 
 <section class="route-card">
-    <h2>Artista</h2>
-
     @if (Model.Artista is null)
     {
-        <p>Artista no encontrado.</p>
+        <div class="section-heading">
+            <p class="eyebrow">Artistas</p>
+            <h2>Todos</h2>
+        </div>
+
+        @if (Model.Artistas.Count == 0)
+        {
+            <p>No hay artistas disponibles.</p>
+        }
+        else
+        {
+            <div class="media-grid artist-index-grid">
+                @foreach (var artist in Model.Artistas)
+                {
+                    <a asp-page="/Artist" asp-route-id="@artist.Id" class="media-tile artist-tile">
+                        <span class="media-thumb artist-artwork" style="@(string.IsNullOrWhiteSpace(artist.UrlImagen) ? null : $"background-image: url('{artist.UrlImagen}')")"></span>
+                        <span>@artist.Nombre</span>
+                    </a>
+                }
+            </div>
+        }
     }
     else
     {
-        <h3>@Model.Artista.Nombre</h3>
-        <p class="small-note">@Model.Artista.Biografia</p>
+        <div class="entity-hero">
+            <div class="entity-artwork artist-artwork" style="@(string.IsNullOrWhiteSpace(Model.Artista.UrlImagen) ? null : $"background-image: url('{Model.Artista.UrlImagen}')")"></div>
+            <div>
+                <p class="eyebrow">Artista</p>
+                <h2>@Model.Artista.Nombre</h2>
+                <p class="small-note">@Model.Artista.Biografia</p>
+            </div>
+        </div>
 
         <div class="track-list compact">
             @foreach (var cancion in Model.Canciones)
             {
+                var cover = cancion.UrlImagenCancion ?? cancion.UrlPortadaAlbum;
                 <button type="button"
                         class="track-btn"
                         data-track-id="@cancion.Id"
@@ -26,9 +51,12 @@
                         data-title="@cancion.NombreCancion"
                         data-artist="@cancion.NombreArtista"
                         data-album="@cancion.NombreAlbum"
-                        data-cover="@cancion.UrlPortadaAlbum">
-                    <span class="track-title">@cancion.NombreCancion</span>
-                    <span class="track-meta">@cancion.NombreAlbum</span>
+                        data-cover="@cover">
+                    <span class="track-cover" style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"></span>
+                    <span class="track-copy">
+                        <span class="track-title">@cancion.NombreCancion</span>
+                        <span class="track-meta">@cancion.NombreAlbum</span>
+                    </span>
                 </button>
             }
         </div>

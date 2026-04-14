@@ -7,8 +7,8 @@
 <section class="playlist-page">
     <aside class="route-card playlist-sidebar-card">
         <div class="section-heading">
+            <p class="eyebrow">Biblioteca</p>
             <h2>Tus playlists</h2>
-            <p class="small-note">Crea y administra listas compartidas para todo el equipo.</p>
         </div>
 
         <form method="post" asp-page-handler="Crear" class="playlist-form">
@@ -16,7 +16,7 @@
             <input asp-for="NombreNuevaPlaylist" placeholder="Ej. Exitos del proyecto" />
 
             <label for="DescripcionNuevaPlaylist">Descripcion</label>
-            <textarea asp-for="DescripcionNuevaPlaylist" rows="3" placeholder="Que musica quieres guardar aqui"></textarea>
+            <textarea asp-for="DescripcionNuevaPlaylist" rows="2" placeholder="Opcional"></textarea>
 
             <button type="submit" class="primary-action">Crear playlist</button>
         </form>
@@ -47,7 +47,7 @@
         {
             <section class="route-card">
                 <h2>No hay playlists seleccionadas</h2>
-                <p class="small-note">Crea una playlist desde el panel izquierdo para empezar.</p>
+                <p class="small-note">Crea una para empezar.</p>
             </section>
         }
         else
@@ -58,6 +58,13 @@
                         <p class="now-playing-label">Playlist activa</p>
                         <h2>@Model.Playlist.Nombre</h2>
                         <p class="small-note">@Model.Playlist.Descripcion</p>
+                        <div class="playlist-cover-strip" aria-label="Canciones de la playlist">
+                            @foreach (var cancion in Model.Playlist.Canciones.Take(6))
+                            {
+                                var cover = cancion.UrlImagenCancion ?? cancion.UrlPortadaAlbum;
+                                <span style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"></span>
+                            }
+                        </div>
                     </div>
 
                     <div class="playlist-header-actions">
@@ -85,27 +92,39 @@
             </section>
 
             <section class="route-card">
-                <h3>Agregar canciones</h3>
-                <form method="post" asp-page-handler="AgregarCancion" asp-route-id="@Model.Playlist.Id" class="playlist-form inline-form">
-                    <label for="IdCancionAgregar">Cancion del catalogo</label>
-                    <select asp-for="IdCancionAgregar">
-                        <option value="0">Selecciona una cancion</option>
-                        @foreach (var cancion in Model.CatalogoCanciones)
-                        {
-                            var exists = Model.Playlist.Canciones.Any(item => item.IdCancion == cancion.Id);
-                            if (!exists)
-                            {
-                                <option value="@cancion.Id">@cancion.NombreCancion - @cancion.NombreArtista</option>
-                            }
-                        }
-                    </select>
+                <h3>Agregar</h3>
+                @{
+                    var cancionesDisponibles = Model.CatalogoCanciones
+                        .Where(cancion => !Model.Playlist.Canciones.Any(item => item.IdCancion == cancion.Id))
+                        .ToList();
+                }
 
-                    <button type="submit" class="primary-action">Agregar</button>
-                </form>
+                @if (cancionesDisponibles.Count == 0)
+                {
+                    <p class="small-note">Ya agregaste todas las canciones.</p>
+                }
+                else
+                {
+                    <div class="add-song-grid">
+                        @foreach (var cancion in cancionesDisponibles)
+                        {
+                            var cover = cancion.UrlImagenCancion ?? cancion.UrlPortadaAlbum;
+                            <form method="post" asp-page-handler="AgregarCancion" asp-route-id="@Model.Playlist.Id" class="add-song-card">
+                                <input type="hidden" name="IdCancionAgregar" value="@cancion.Id" />
+                                <span class="track-cover" style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"></span>
+                                <span class="track-copy">
+                                    <span class="track-title">@cancion.NombreCancion</span>
+                                    <span class="track-meta">@cancion.NombreArtista</span>
+                                </span>
+                                <button type="submit" class="ghost-action">Agregar</button>
+                            </form>
+                        }
+                    </div>
+                }
             </section>
 
             <section class="route-card">
-                <h3>Canciones en la playlist</h3>
+                <h3>Canciones</h3>
 
                 @if (Model.Playlist.Canciones.Count == 0)
                 {
@@ -116,6 +135,7 @@
                     <div class="playlist-song-list playlist-current-song-list">
                         @foreach (var cancion in Model.Playlist.Canciones)
                         {
+                            var cover = cancion.UrlImagenCancion ?? cancion.UrlPortadaAlbum;
                             <div class="playlist-song-row">
                                 <button type="button"
                                         class="track-btn"
@@ -124,9 +144,12 @@
                                         data-title="@cancion.NombreCancion"
                                         data-artist="@cancion.NombreArtista"
                                         data-album="@cancion.NombreAlbum"
-                                        data-cover="@cancion.UrlPortadaAlbum">
-                                    <span class="track-title">@cancion.NombreCancion</span>
-                                    <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
+                                        data-cover="@cover">
+                                    <span class="track-cover" style="@(string.IsNullOrWhiteSpace(cover) ? null : $"background-image: url('{cover}')")"></span>
+                                    <span class="track-copy">
+                                        <span class="track-title">@cancion.NombreCancion</span>
+                                        <span class="track-meta">@cancion.NombreArtista · @cancion.NombreAlbum</span>
+                                    </span>
                                 </button>
 
                                 <form method="post" asp-page-handler="QuitarCancion" asp-route-id="@Model.Playlist.Id" asp-route-idCancion="@cancion.IdCancion">

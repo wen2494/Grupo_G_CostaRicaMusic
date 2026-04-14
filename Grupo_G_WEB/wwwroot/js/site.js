@@ -24,23 +24,15 @@
     const titleElements = [document.getElementById("globalNowPlayingTitle"), document.getElementById("sideNowPlayingTitle")].filter(Boolean);
     const artistElements = [document.getElementById("globalNowPlayingArtist"), document.getElementById("sideNowPlayingArtist")].filter(Boolean);
     const albumElements = [document.getElementById("globalNowPlayingAlbum"), document.getElementById("sideNowPlayingAlbum")].filter(Boolean);
-    const playCollectionButtons = Array.from(document.querySelectorAll("[data-play-collection]"));
-    const trackButtons = Array.from(document.querySelectorAll(".track-btn"));
 
-    let currentIndex = -1;
-    let pendingSeekTime = null;
-    let queueButtons = trackButtons;
+    let trackButtons = [];
+    let queueButtons = [];
+    let currentTrackId = "";
     let queueSelector = null;
+    let pendingSeekTime = null;
     let shuffleEnabled = false;
     let repeatEnabled = false;
-
-    const triggerArtworkPulse = () => {
-        [sideArtwork, globalArtwork].forEach((element) => {
-            element.classList.remove("artwork-pulse");
-            void element.offsetWidth;
-            element.classList.add("artwork-pulse");
-        });
-    };
+    let isNavigating = false;
 
     const formatTime = (value) => {
         if (!Number.isFinite(value) || value < 0) {
@@ -50,6 +42,23 @@
         const minutes = Math.floor(value / 60);
         const seconds = Math.floor(value % 60);
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    };
+
+    const getCurrentButton = () => {
+        if (currentTrackId) {
+            return trackButtons.find((button) => button.dataset.trackId === currentTrackId) || null;
+        }
+
+        const src = player.getAttribute("src");
+        return src ? trackButtons.find((button) => button.dataset.src === src) || null : null;
+    };
+
+    const triggerArtworkPulse = () => {
+        [sideArtwork, globalArtwork].forEach((element) => {
+            element.classList.remove("artwork-pulse");
+            void element.offsetWidth;
+            element.classList.add("artwork-pulse");
+        });
     };
 
     const setToggleState = (button, isActive) => {
@@ -104,7 +113,7 @@
             element.textContent = initials;
 
             if (cover) {
-                element.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.42)), url("${cover}")`;
+                element.style.backgroundImage = `linear-gradient(rgba(16, 17, 19, 0.12), rgba(16, 17, 19, 0.34)), url("${cover}")`;
                 element.classList.add("has-cover");
             } else {
                 element.style.backgroundImage = "";
@@ -113,47 +122,80 @@
         });
     };
 
-    const markTrackState = (isPlaying) => {
-        trackButtons.forEach((button, index) => {
-            button.classList.toggle("is-selected", index === currentIndex);
-            button.classList.toggle("is-playing", index === currentIndex && isPlaying);
+    const markTrackState = () => {
+        const isPlaying = !player.paused;
+        const src = player.getAttribute("src") || "";
+
+        trackButtons.forEach((button) => {
+            const isCurrent = (currentTrackId && button.dataset.trackId === currentTrackId) || (!currentTrackId && button.dataset.src === src);
+            button.classList.toggle("is-selected", isCurrent);
+            button.classList.toggle("is-playing", isCurrent && isPlaying);
         });
+    };
+
+    const persistState = () => {
+        const activeButton = getCurrentButton();
+        localStorage.setItem(storageKey, JSON.stringify({
+            src: player.getAttribute("src") || "",
+            title: activeButton?.dataset.title || titleElements[0]?.textContent || "",
+            artist: activeButton?.dataset.artist || artistElements[0]?.textContent || "",
+            album: activeButton?.dataset.album || albumElements[0]?.textContent || "",
+            cover: activeButton?.dataset.cover || "",
+            trackId: currentTrackId || activeButton?.dataset.trackId || "",
+            queueSelector,
+            currentTime: Number.isFinite(player.currentTime) ? player.currentTime : 0,
+            volume: Number(volumeBar.value),
+            shuffleEnabled,
+            repeatEnabled
+        }));
     };
 
     const renderUpNext = () => {
         queueCount.textContent = `${queueButtons.length} canciones`;
+        upNextList.innerHTML = "";
 
         if (!queueButtons.length) {
-            upNextList.innerHTML = `<p class="small-note">La cola aparecera cuando selecciones una cancion.</p>`;
+            const empty = document.createElement("p");
+            empty.className = "small-note";
+            empty.textContent = "Sin cola.";
+            upNextList.appendChild(empty);
             return;
         }
 
-        const currentButton = currentIndex >= 0 ? trackButtons[currentIndex] : null;
-        const activeQueueIndex = currentButton ? queueButtons.findIndex((button) => button === currentButton) : -1;
+        const currentButton = getCurrentButton();
+        const activeQueueIndex = currentButton ? queueButtons.findIndex((button) => button.dataset.trackId === currentButton.dataset.trackId && button.dataset.src === currentButton.dataset.src) : -1;
         const orderedButtons = activeQueueIndex >= 0
             ? [...queueButtons.slice(activeQueueIndex + 1), ...queueButtons.slice(0, activeQueueIndex + 1)]
             : queueButtons;
 
-        upNextList.innerHTML = "";
         orderedButtons.slice(0, 6).forEach((button, index) => {
             const item = document.createElement("button");
+            const cover = button.dataset.cover || "";
             item.type = "button";
             item.className = "up-next-item";
-            item.innerHTML = `
-                <span class="up-next-index">${index === 0 && activeQueueIndex >= 0 ? "Ahora" : `#${index + 1}`}</span>
-                <span class="up-next-copy">
-                    <strong>${button.dataset.title || ""}</strong>
-                    <small>${button.dataset.artist || ""}</small>
-                </span>
-            `;
 
-            item.addEventListener("click", () => {
-                const indexInTracks = trackButtons.findIndex((trackButton) => trackButton === button);
-                if (indexInTracks >= 0) {
-                    loadTrack(indexInTracks, true);
-                }
-            });
+            const coverElement = document.createElement("span");
+            coverElement.className = "up-next-cover";
+            if (cover) {
+                coverElement.style.backgroundImage = `url("${cover}")`;
+            }
 
+            const copy = document.createElement("span");
+            copy.className = "up-next-copy";
+
+            const title = document.createElement("strong");
+            title.textContent = button.dataset.title || "";
+
+            const artist = document.createElement("small");
+            artist.textContent = button.dataset.artist || "";
+
+            const marker = document.createElement("span");
+            marker.className = "up-next-index";
+            marker.textContent = index === 0 && activeQueueIndex >= 0 ? "Ahora" : `#${index + 1}`;
+
+            copy.append(title, artist, marker);
+            item.append(coverElement, copy);
+            item.addEventListener("click", () => loadTrack(button, true));
             upNextList.appendChild(item);
         });
     };
@@ -166,32 +208,53 @@
 
         if (!queueButtons.length) {
             queueButtons = trackButtons;
+            queueSelector = null;
         }
 
         renderUpNext();
     };
 
-    const persistState = () => {
-        const activeButton = currentIndex >= 0 ? trackButtons[currentIndex] : null;
-        localStorage.setItem(storageKey, JSON.stringify({
-            index: currentIndex,
-            src: player.getAttribute("src") || "",
-            title: activeButton?.dataset.title || titleElements[0]?.textContent || "",
-            artist: activeButton?.dataset.artist || artistElements[0]?.textContent || "",
-            album: activeButton?.dataset.album || albumElements[0]?.textContent || "",
-            cover: activeButton?.dataset.cover || "",
-            trackId: activeButton?.dataset.trackId || "",
-            queueSelector,
-            currentTime: Number.isFinite(player.currentTime) ? player.currentTime : 0,
-            volume: Number(volumeBar.value),
-            shuffleEnabled,
-            repeatEnabled
-        }));
-    };
+    const loadTrack = (button, autoplay) => {
+        if (!button) {
+            return;
+        }
 
-    const getQueueIndex = () => {
-        const currentButton = currentIndex >= 0 ? trackButtons[currentIndex] : null;
-        return currentButton ? queueButtons.findIndex((button) => button === currentButton) : -1;
+        const nextTrackId = button.dataset.trackId || "";
+        const nextSrc = button.dataset.src || "";
+        const isNewTrack = currentTrackId !== nextTrackId || player.getAttribute("src") !== nextSrc;
+        currentTrackId = nextTrackId;
+
+        const closestCollection = button.closest(".track-list, .playlist-song-list, .hero-gallery");
+        if (closestCollection) {
+            setQueue(`.${Array.from(closestCollection.classList).join(".")}`);
+        }
+
+        if (isNewTrack) {
+            pendingSeekTime = null;
+            player.src = nextSrc;
+            player.load();
+        }
+
+        setLabels(button.dataset.title || "", button.dataset.artist || "", button.dataset.album || "");
+        updateArtwork(button.dataset.title || "", button.dataset.artist || "", button.dataset.cover || "");
+        triggerArtworkPulse();
+        seekBar.value = "0";
+        currentTimeLabel.textContent = "0:00";
+        durationLabel.textContent = "0:00";
+        if (isNewTrack) {
+            try {
+                player.currentTime = 0;
+            } catch {
+                pendingSeekTime = 0;
+            }
+        }
+        markTrackState();
+        persistState();
+        renderUpNext();
+
+        if (autoplay) {
+            player.play().catch(() => setPlayIcon(false));
+        }
     };
 
     const moveInQueue = (offset) => {
@@ -200,55 +263,29 @@
         }
 
         if (shuffleEnabled && queueButtons.length > 1) {
-            const currentButton = currentIndex >= 0 ? trackButtons[currentIndex] : null;
+            const currentButton = getCurrentButton();
             const candidateButtons = queueButtons.filter((button) => button !== currentButton);
-            const randomButton = candidateButtons[Math.floor(Math.random() * candidateButtons.length)];
-            const randomIndex = trackButtons.findIndex((button) => button === randomButton);
-
-            if (randomIndex >= 0) {
-                loadTrack(randomIndex, true);
-            }
-
+            loadTrack(candidateButtons[Math.floor(Math.random() * candidateButtons.length)], true);
             return;
         }
 
-        const queueIndex = getQueueIndex();
+        const currentButton = getCurrentButton();
+        const queueIndex = currentButton ? queueButtons.findIndex((button) => button.dataset.trackId === currentButton.dataset.trackId && button.dataset.src === currentButton.dataset.src) : -1;
         const targetButton = queueButtons[queueIndex < 0 ? 0 : (queueIndex + offset + queueButtons.length) % queueButtons.length];
-        const targetIndex = trackButtons.findIndex((button) => button === targetButton);
-        if (targetIndex >= 0) {
-            loadTrack(targetIndex, true);
-        }
+        loadTrack(targetButton, true);
     };
 
-    const loadTrack = (index, autoplay) => {
-        if (index < 0 || index >= trackButtons.length) {
-            return;
+    const bindDynamicControls = () => {
+        trackButtons = Array.from(document.querySelectorAll(".track-btn[data-src]"));
+        setQueue(queueSelector);
+
+        const state = readState();
+        if (state?.trackId) {
+            currentTrackId = String(state.trackId);
         }
 
-        const button = trackButtons[index];
-        currentIndex = index;
-
-        const closestCollection = button.closest(".track-list, .playlist-song-list");
-        if (closestCollection) {
-            setQueue(`.${Array.from(closestCollection.classList).join(".")}`);
-        }
-
-        if (player.getAttribute("src") !== button.dataset.src) {
-            player.src = button.dataset.src || "";
-        }
-
-        setLabels(button.dataset.title || "", button.dataset.artist || "", button.dataset.album || "");
-        updateArtwork(button.dataset.title || "", button.dataset.artist || "", button.dataset.cover || "");
-        triggerArtworkPulse();
-        seekBar.value = "0";
-        currentTimeLabel.textContent = "0:00";
-        markTrackState(false);
-        persistState();
+        markTrackState();
         renderUpNext();
-
-        if (autoplay) {
-            player.play().catch(() => setPlayIcon(false));
-        }
     };
 
     const restoreState = () => {
@@ -267,9 +304,8 @@
         repeatEnabled = state.repeatEnabled === true;
         syncModeButtons();
 
-        if (state.queueSelector) {
-            setQueue(state.queueSelector);
-        }
+        queueSelector = state.queueSelector || null;
+        currentTrackId = state.trackId || "";
 
         if (state.src) {
             player.src = state.src;
@@ -278,54 +314,139 @@
             pendingSeekTime = typeof state.currentTime === "number" ? state.currentTime : null;
         }
 
-        if (state.trackId) {
-            currentIndex = trackButtons.findIndex((button) => button.dataset.trackId === String(state.trackId));
-        } else if (typeof state.index === "number") {
-            currentIndex = state.index;
-        }
-
-        markTrackState(false);
-        renderUpNext();
+        bindDynamicControls();
     };
 
-    trackButtons.forEach((button, index) => {
-        button.addEventListener("click", () => loadTrack(index, true));
+    const replacePageParts = (html, url, pushState) => {
+        const parsed = new DOMParser().parseFromString(html, "text/html");
+        const nextContent = parsed.querySelector(".app-content");
+        const nextSidebar = parsed.querySelector(".app-sidebar");
+        const content = document.querySelector(".app-content");
+        const sidebar = document.querySelector(".app-sidebar");
+
+        if (!nextContent || !content) {
+            window.location.href = url;
+            return;
+        }
+
+        content.replaceWith(nextContent);
+        if (nextSidebar && sidebar) {
+            sidebar.replaceWith(nextSidebar);
+        }
+
+        document.title = parsed.title || document.title;
+        if (pushState) {
+            history.pushState({}, "", url);
+        }
+
+        bindDynamicControls();
+        document.body.classList.remove("is-navigating");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const navigateTo = async (url, options = {}) => {
+        if (isNavigating) {
+            return;
+        }
+
+        isNavigating = true;
+        persistState();
+        document.body.classList.add("is-navigating");
+
+        try {
+            const response = await fetch(url, {
+                method: options.method || "GET",
+                body: options.body || null,
+                headers: { "X-Requested-With": "fetch" },
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+                throw new Error(`Navigation failed with ${response.status}`);
+            }
+
+            replacePageParts(await response.text(), response.url || url, options.pushState !== false);
+        } catch {
+            window.location.href = url;
+        } finally {
+            isNavigating = false;
+        }
+    };
+
+    document.addEventListener("click", (event) => {
+        const trackButton = event.target.closest(".track-btn[data-src]");
+        if (trackButton) {
+            event.preventDefault();
+            loadTrack(trackButton, true);
+            return;
+        }
+
+        const collectionButton = event.target.closest("[data-play-collection]");
+        if (collectionButton) {
+            event.preventDefault();
+            const selector = collectionButton.dataset.playCollection;
+            const collectionButtons = selector
+                ? Array.from(document.querySelectorAll(`${selector} .track-btn, ${selector}.track-btn`))
+                : queueButtons;
+
+            if (collectionButtons.length) {
+                setQueue(selector || null);
+                loadTrack(collectionButtons[0], true);
+            }
+            return;
+        }
+
+        const link = event.target.closest("a[href]");
+        if (!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target || link.hasAttribute("download")) {
+            return;
+        }
+
+        const url = new URL(link.href, window.location.href);
+        if (url.origin !== window.location.origin || url.hash && url.pathname === window.location.pathname) {
+            return;
+        }
+
+        event.preventDefault();
+        navigateTo(url.href);
     });
 
-    playCollectionButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            const selector = button.dataset.playCollection;
-            if (!selector) {
-                return;
-            }
+    document.addEventListener("submit", (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement) || form.target) {
+            return;
+        }
 
-            const collectionButtons = Array.from(document.querySelectorAll(`${selector} .track-btn, ${selector}.track-btn`));
-            if (!collectionButtons.length) {
-                return;
-            }
+        const method = (form.method || "GET").toUpperCase();
+        const action = new URL(form.action || window.location.href, window.location.href);
 
-            setQueue(selector);
-            const firstIndex = trackButtons.findIndex((trackButton) => trackButton === collectionButtons[0]);
-            if (firstIndex >= 0) {
-                loadTrack(firstIndex, true);
-            }
+        if (action.origin !== window.location.origin) {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (method === "GET") {
+            const data = new FormData(form);
+            action.search = new URLSearchParams(data).toString();
+            navigateTo(action.href);
+            return;
+        }
+
+        navigateTo(action.href, {
+            method,
+            body: new FormData(form)
         });
     });
 
     playCollectionBtn.addEventListener("click", () => {
-        if (!queueButtons.length) {
-            return;
-        }
-
-        const firstIndex = trackButtons.findIndex((button) => button === queueButtons[0]);
-        if (firstIndex >= 0) {
-            loadTrack(firstIndex, true);
+        if (queueButtons.length) {
+            loadTrack(queueButtons[0], true);
         }
     });
 
     playPauseBtn.addEventListener("click", () => {
         if (!player.getAttribute("src") && trackButtons.length > 0) {
-            loadTrack(0, true);
+            loadTrack(trackButtons[0], true);
             return;
         }
 
@@ -354,15 +475,17 @@
     });
 
     player.addEventListener("play", () => {
+        document.body.classList.add("is-playing");
         setPlayIcon(true);
-        markTrackState(true);
+        markTrackState();
         persistState();
         renderUpNext();
     });
 
     player.addEventListener("pause", () => {
+        document.body.classList.remove("is-playing");
         setPlayIcon(false);
-        markTrackState(false);
+        markTrackState();
         persistState();
     });
 
@@ -409,10 +532,12 @@
         persistState();
     });
 
+    window.addEventListener("popstate", () => navigateTo(window.location.href, { pushState: false }));
     window.addEventListener("beforeunload", persistState);
 
-    setQueue(null);
+    bindDynamicControls();
     restoreState();
     syncModeButtons();
-    setPlayIcon(false);
+    setPlayIcon(!player.paused && Boolean(player.getAttribute("src")));
+    document.body.classList.toggle("is-playing", !player.paused && Boolean(player.getAttribute("src")));
 })();

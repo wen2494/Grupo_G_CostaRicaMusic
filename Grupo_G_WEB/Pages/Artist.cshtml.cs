@@ -7,11 +7,18 @@ namespace Grupo_G_WEB.Pages;
 public class ArtistModel(IMusicCatalogService catalogService) : PageModel
 {
     public Artista? Artista { get; private set; }
+    public IReadOnlyList<Artista> Artistas { get; private set; } = [];
     public IReadOnlyList<CancionDetalleDto> Canciones { get; private set; } = [];
 
-    public async Task OnGetAsync(int id)
+    public async Task OnGetAsync(int? id)
     {
-        Artista = await catalogService.GetArtistByIdAsync(id);
-        Canciones = await catalogService.GetSongsByArtistAsync(id);
+        if (id is null)
+        {
+            Artistas = await catalogService.SearchArtistsAsync(null);
+            return;
+        }
+
+        Artista = await catalogService.GetArtistByIdAsync(id.Value);
+        Canciones = await catalogService.GetSongsByArtistAsync(id.Value);
     }
 }
